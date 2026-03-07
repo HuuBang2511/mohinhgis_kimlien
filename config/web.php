@@ -147,6 +147,12 @@ $config = [
                 'allow' => true,
             ],
             [
+                'actions' => ['vuviec'],
+                'controllers' => ['quanly/map'], 
+                'allow' => true,
+                'roles' => ['?'], 
+            ],
+            [
                 'controllers' => ['auth/user'],
                 'allow' => true,
                 'actions' => ['tao-tai-khoan-nguoi-dan', 'xac-thuc-tai-khoan-nguoi-dan'], // Chỉ cho phép truy cập action index trong controller API
@@ -156,8 +162,11 @@ $config = [
                 'allow' => true,
                 'roles' => ['@'],
             ],
+            
         ],
     ],
+
+
 
     'params' => $params,
 ];
