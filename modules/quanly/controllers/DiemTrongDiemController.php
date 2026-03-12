@@ -21,6 +21,30 @@ class DiemTrongDiemController extends \app\modules\quanly\base\QuanlyBaseControl
 
     public $title = "Điểm trọng điểm";
 
+    public function behaviors()
+{
+    return [
+        'access' => [
+            'class' => \yii\filters\AccessControl::class,
+            'rules' => [
+                [
+                    'allow' => true,
+                    'actions' => ['create'],
+                    'roles' => ['?', '@'], // Guest + logged in
+                ],
+                [
+                    'allow' => true,
+                    'actions' => ['index', 'view', 'update', 'delete', 'search'],
+                    'roles' => ['@'],
+                ],
+            ],
+            'denyCallback' => function ($rule, $action) {
+                return $this->redirect(\Yii::$app->urlManager->createUrl('auth/auth/login'));
+            }
+        ],
+    ];
+}
+
     /**
      * Lists all DiemTrongDiem models.
      * @return mixed
@@ -106,7 +130,11 @@ class DiemTrongDiemController extends \app\modules\quanly\base\QuanlyBaseControl
                 $model->save();
             }
 
-            return $this->redirect(['view', 'id' => $model->id]);
+            $ref = Yii::$app->request->get('ref');
+if ($ref === 'map') {
+    return $this->redirect(['/quanly/map/vuviec']);
+}
+return $this->redirect(['view', 'id' => $model->id]);
         }
 
 

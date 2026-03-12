@@ -162,11 +162,8 @@ $config = [
                 'allow' => true,
                 'roles' => ['@'],
             ],
-            
         ],
     ],
-
-
 
     'params' => $params,
 ];

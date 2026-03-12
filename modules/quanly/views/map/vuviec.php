@@ -26,6 +26,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
     :root {
@@ -228,6 +229,31 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
     }
     /* --- Kết thúc CSS mới --- */
 
+    .report-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: background 0.2s, box-shadow 0.2s;
+    background: var(--background-color);
+}
+.report-card:hover {
+    background: var(--light-gray);
+    box-shadow: var(--shadow);
+}
+.report-icon {
+    width: 22px; height: 22px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+.report-card-title { font-weight: 600; font-size: 14px; }
+.report-card-desc  { font-size: 12px; color: var(--text-light-color); margin-top: 2px; }
+
 
     @media screen and (max-width: 768px) {
         #tabs {
@@ -244,7 +270,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
     <div id="tabs">
         <div class="tabs-header">
             <a href="<?= Yii::$app->homeUrl ?>" target="_blank">
-                <img src="https://gis.nongdanviet.net/resources/images/logo_map_vuviec.jpg" alt="Logo">
+                <img src="https://datafiles.nghean.gov.vn/nan-ubnd/6710/XaDongThanh/XaDongThanh.png" alt="Logo">
             </a>
             <button id="back-to-map-mobile-btn"></button>
         </div>
@@ -252,6 +278,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
         <div class="tab-buttons">
             <button class="tab-button active" data-tab="layer">Lớp dữ liệu</button>
             <button class="tab-button" data-tab="info">Thông tin</button>
+            <button class="tab-button" data-tab="report">Người dân báo cáo</button>
         </div>
 
         <div id="layer-content" class="tab-content active">
@@ -437,21 +464,21 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
                                 <!-- 2.5 Lớp Vụ việc -->
                                 <li>
                                     <details>
-                                        <summary><i data-lucide="alert-triangle" class="icon"></i> Lớp Vụ việc</summary>
+                                        <summary><i data-lucide="alert-triangle" class="icon"></i> Lớp phản ánh hiện trường</summary>
                                         <ul>
                                             <li class="layer-tree-item">
                                                 <i data-lucide="map-pin" class="icon"></i>
                                                 <label>
-                                                    <span>Vụ việc (Điểm WMS)</span>
+                                                    <span>Lớp vụ việc</span>
                                                     <input type="checkbox" data-layer-id="wmsVuviecLayer" data-layer-type="wms" data-z-index="550" 
-                                                           data-wms-name="mohinhgis_pa05:vu_viec" data-display-name="Vụ việc (Điểm WMS)" 
+                                                           data-wms-name="mohinhgis_pa05:vu_viec" data-display-name="Lớp vụ việc" 
                                                            data-popup-fields='{"ma_vu_viec": "Mã vụ việc", "tom_tat_noi_dung" : "Tóm tắt nội dung"}'>
                                                 </label>
                                             </li>
                                             <li class="layer-tree-item">
                                                 <i data-lucide="siren" class="icon"></i>
                                                 <label>
-                                                    <span>Điểm nhạy cảm</span>
+                                                    <span>Phản ánh của dân</span>
                                                     <input type="checkbox" data-layer-id="wmsDiemnhaycamLayer" data-layer-type="wms" data-z-index="540" 
                                                            data-wms-name="mohinhgis_pa05:diem_nhay_cam" data-display-name="Điểm nhạy cảm" 
                                                            data-popup-fields='{"tenloaihinh": "Tên loại hình", "thongtin": "Thông tin"}'>
@@ -460,7 +487,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
                                             <li class="layer-tree-item">
                                                 <i data-lucide="target" class="icon"></i>
                                                 <label>
-                                                    <span>Điểm trọng điểm</span>
+                                                    <span>Điểm về rác thải</span>
                                                     <input type="checkbox" data-layer-id="wmsDiemtrongdiemLayer" data-layer-type="wms" data-z-index="530" 
                                                            data-wms-name="mohinhgis_pa05:diem_trong_diem" data-display-name="Điểm trọng điểm" 
                                                            data-popup-fields='{"tenloaihinh": "Tên loại hình", "thongtin": "Thông tin"}'>
@@ -516,6 +543,46 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
             <div class="section-title">Thông tin chi tiết</div>
             <div id="feature-details"><p>Nhấn vào một đối tượng trên bản đồ để xem thông tin.</p></div>
         </div>
+        <div id="report-content" class="tab-content">
+            <div class="section-title">Tham gia bản đồ số</div>
+            <p style="font-size:13px; color:var(--text-light-color); margin-bottom:1rem;">
+                Chọn loại thông tin bạn muốn báo cáo. Không cần đăng nhập.
+            </p>
+
+            <a href="<?= Url::to(['/quanly/diem-nhay-cam/create', 'ref' => 'map']) ?>" class="report-card">
+                <i data-lucide="alert-triangle" class="report-icon"></i>
+                <div>
+                    <div class="report-card-title">Điểm phản ánh của dân</div>
+                    <div class="report-card-desc">Báo cáo khu vực nhạy cảm cần chú ý</div>
+                </div>
+                <i data-lucide="chevron-right" style="margin-left:auto; flex-shrink:0;"></i>
+            </a>
+
+            <a href="<?= Url::to(['/quanly/diem-trong-diem/create', 'ref' => 'map']) ?>" class="report-card">
+                <i data-lucide="focus" class="report-icon"></i>
+                <div>
+                    <div class="report-card-title">Điểm về môi trường</div>
+                    <div class="report-card-desc">Đánh dấu địa điểm trọng điểm về rác thải</div>
+                </div>
+                <i data-lucide="chevron-right" style="margin-left:auto; flex-shrink:0;"></i>
+            </a>
+
+            <!-- QR Code nằm trong tab, tự động hiện -->
+            <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px; text-align:center;">
+                <p style="font-size:13px; font-weight:600; margin:0 0 12px; color:var(--text-color);">
+                    <i data-lucide="qr-code" style="width:15px;height:15px;vertical-align:middle;margin-right:5px;"></i>
+                    Quét QR để truy cập bản đồ
+                </p>
+                <div id="qr-canvas" style="display:inline-block; padding:10px; background:#fff; border:1px solid var(--border-color); border-radius:10px; margin-bottom:12px;"></div>
+                <p id="qr-url-text" style="font-size:11px; color:var(--text-light-color); word-break:break-all; margin:0 0 12px; padding:8px; background:var(--light-gray); border-radius:6px;"></p>
+                <button onclick="App.UI.downloadQR()" style="
+                    width:100%; padding:9px; background:var(--primary-color); color:white;
+                    border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500;
+                    display:flex; align-items:center; justify-content:center; gap:6px;">
+                    <i data-lucide="download" style="width:15px;height:15px;"></i> Tải QR Code (PNG)
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="mapTong">
@@ -529,15 +596,15 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
 document.addEventListener('DOMContentLoaded', function () {
     const App = {
         // --- CONFIGURATION ---
-        WMS_URL: 'http://103.9.77.141:8080/geoserver/mohinhgis_kimlien/wms',
-        GEOJSON_VUVEC_URL: 'http://103.9.77.141:8080/geoserver/mohinhgis_kimlien/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mohinhgis_kimlien%3Avu_viec&maxFeatures=5000&outputFormat=application%2Fjson',
+        WMS_URL: 'http://103.9.77.141:8080/geoserver/gis_dongthanh/wms',
+        GEOJSON_VUVEC_URL: 'http://103.9.77.141:8080/geoserver/gis_dongthanh/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mohinhgis_pa05%3Avu_viec&maxFeatures=5000&outputFormat=application%2Fjson',
         DETAIL_URLS: {
             vuViec: '<?= $vuViecDetailUrlBase ?>',
             nocGia: '<?= $nocGiaDetailUrlBase ?>',
             diemNhayCam: '<?= $diemNhayCamDetailUrlBase ?>',
             diemTrongDiem: '<?= $diemTrongDiemDetailUrlBase ?>',
         },
-        MAP_CENTER: [21.007144, 105.834918],
+        MAP_CENTER: [19.051690, 105.536957],
         MAP_ZOOM: 14,
         
         map: null,
@@ -735,10 +802,11 @@ document.addEventListener('DOMContentLoaded', function () {
         // --- MODULE QUẢN LÝ GIAO DIỆN (ĐÃ CẬP NHẬT) ---
         UI: {
             init() {
-                 this.fixMobileHeight();
+                this.fixMobileHeight();
                 document.getElementById('toggle-tab-btn').innerHTML = `<i data-lucide="menu"></i>`;
                 document.getElementById('back-to-map-mobile-btn').innerHTML = `<i data-lucide="x"></i>`;
                 if (window.innerWidth <= 768) this.toggleTabPanel(false);
+                this.renderQRCode();
             },
             fixMobileHeight: () => {
                 const setAppHeight = () => document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
@@ -838,10 +906,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 tabs.classList.toggle(isMobile ? 'active' : 'hidden', isMobile ? show : !show);
                 setTimeout(() => App.map.invalidateSize(), 300);
              },
-            toggleLegend() { 
+            toggleLegend() {
                 const legend = this.legendContainer;
                 legend.style.display = (legend.style.display === 'none' || legend.style.display === '') ? 'block' : 'none';
-             }
+            },
+
+            renderQRCode() {
+                const container = document.getElementById('qr-canvas');
+                const urlText = document.getElementById('qr-url-text');
+                if (!container) return;
+                const publicUrl = '<?= Yii::$app->urlManager->createAbsoluteUrl(['/quanly/map/vuviec']) ?>';
+                if (urlText) urlText.textContent = publicUrl;
+                container.innerHTML = '';
+                new QRCode(container, {
+                    text: publicUrl,
+                    width: 180,
+                    height: 180,
+                    colorDark: '#1e293b',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                lucide.createIcons();
+            },
+
+            downloadQR() {
+                const canvas = document.querySelector('#qr-canvas canvas');
+                const img = document.querySelector('#qr-canvas img');
+                let dataUrl;
+                if (canvas) dataUrl = canvas.toDataURL('image/png');
+                else if (img) dataUrl = img.src;
+                else return;
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = 'qrcode-bandodso.png';
+                a.click();
+            },
         },
         
         // --- MODULE QUẢN LÝ SỰ KIỆN (ĐÃ CẬP NHẬT onMapClick) ---
@@ -905,5 +1004,3 @@ document.addEventListener('DOMContentLoaded', function () {
     App.init();
 });
 </script>
-
-

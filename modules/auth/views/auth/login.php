@@ -20,7 +20,7 @@ $this->title = 'Đăng nhập';
     <?php $this->head() ?>
     <style>
         body {
-            background: url('<?= Yii::$app->request->baseUrl ?>/images/background_thanhtra_moi.png') no-repeat center center fixed;
+            background: url('<?= Yii::$app->request->baseUrl ?>/images/background_dongthanh.png') no-repeat center center fixed;
             background-size: cover;
         }
         .login-card {
@@ -42,7 +42,7 @@ $this->title = 'Đăng nhập';
 <div class="container">
     <div class="card login-card bg-white p-4">
         <div class="text-center">
-            <img src="<?= Yii::$app->request->baseUrl ?>/images/logo_thanhtra.jpg" alt="Logo" class="logo">
+            <img src="<?= Yii::$app->request->baseUrl ?>/images/logo_dongthanh.png" alt="Logo" class="logo">
             <h4 class="mb-3">Đăng nhập</h4>
         </div>
 
@@ -67,24 +67,13 @@ $this->title = 'Đăng nhập';
             <button type="submit" class="btn btn-primary w-100 btn-lg mb-2">
                 <i class="fa fa-sign-in-alt me-2"></i> Đăng nhập
             </button>
-            <a href="<?= Yii::$app->urlManager->createUrl(['auth/user/tao-tai-khoan-nguoi-dan']) ?>" class="btn btn-success w-100 btn-lg">
-                <i class="fa fa-user-plus me-2"></i> Người dân đăng ký tài khoản
-            </a>
+            
         <?php ActiveForm::end(); ?>
 
-        <?php if (\Yii::$app->has('authClientCollection')): ?>
-            <hr>
-            <p class="text-center mb-3">Hoặc đăng nhập bằng:</p>
-            <div class="d-flex justify-content-center gap-2">
-                <?= \hcmgis\contrib\oauth2\AuthChoice::widget([
-                    'baseAuthUrl' => ['auth/auth']
-                ]) ?>
-            </div>
-        <?php endif; ?>
     </div>
 
     <div class="text-center text-white mt-4">
-        <small>© <span id="year"></span> HCMGIS</small>
+        <small>© <span id="year"></span></small>
     </div>
 </div>
 
