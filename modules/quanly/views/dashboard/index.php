@@ -167,7 +167,7 @@ function get_badge_class($layerName, $badgeText) {
     <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
         <div>
             <h1 class="text-3xl font-bold text-slate-800"><?= Html::encode($this->title) ?></h1>
-            <p class="text-slate-500 mt-1">Bảng điều hành nghiệp vụ ANTT Phường Thái Bình, Tỉnh Hưng Yên.</p>
+            <p class="text-slate-500 mt-1">Bảng điều hành nghiệp vụ ANTT Phường Kim Liên.</p>
         </div>
         <div class="flex gap-3 items-center">
             <!-- Đã gỡ bỏ ô "Địa bàn" -->
