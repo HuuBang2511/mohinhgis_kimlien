@@ -649,8 +649,8 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
 document.addEventListener('DOMContentLoaded', function () {
     const App = {
         // --- CONFIGURATION ---
-        WMS_URL: 'http://103.9.77.141:8080/geoserver/mohinhgis_kimlien/wms',
-        GEOJSON_VUVEC_URL: 'http://103.9.77.141:8080/geoserver/mohinhgis_kimlien/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mohinhgis_kimlien%3Avu_viec&maxFeatures=5000&outputFormat=application%2Fjson',
+        WMS_URL: 'https://hpngis.online/geoserver/mohinhgis_kimlien/wms',
+        GEOJSON_VUVEC_URL: 'https://hpngis.online/geoserver/mohinhgis_kimlien/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mohinhgis_kimlien%3Avu_viec&maxFeatures=5000&outputFormat=application%2Fjson',
         DETAIL_URLS: {
             vuViec: '<?= $vuViecDetailUrlBase ?>',
             nocGia: '<?= $nocGiaDetailUrlBase ?>',
