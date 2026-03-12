@@ -270,7 +270,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
     <div id="tabs">
         <div class="tabs-header">
             <a href="<?= Yii::$app->homeUrl ?>" target="_blank">
-                <img src="https://datafiles.nghean.gov.vn/nan-ubnd/6710/XaDongThanh/XaDongThanh.png" alt="Logo">
+                <img src="https://datafiles.hanoi.gov.vn/gov-hni/6942/2025/bau%20cu-757848.jpg" alt="Logo">
             </a>
             <button id="back-to-map-mobile-btn"></button>
         </div>
