@@ -18,7 +18,7 @@ use app\modules\quanly\base\UploadFile;
 class DiemDenVsmtController extends \app\modules\quanly\base\QuanlyBaseController
 {
 
-    public $title = "Điểm đến VSMT";
+    public $title = "Điểm đen VSMT";
 
     /**
      * Lists all DiemDenVsmt models.

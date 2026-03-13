@@ -93,29 +93,15 @@ class TapKetRacSearch extends TapKetRac
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
-        'geom',
-        'OBJECTID',
-        'stt',
-        'tt',
         'ten_diem',
-        'phuong',
         'loaihinh',
         'vitri',
         'quymo',
         'cohatang',
         'su_phu',
         'kha_nang',
-        'to_dan_pho',
         'can_bo',
         'khu_vuc',
-        'lat',
-        'long',
-        'status',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        'file_dinhkem',        ];
+              ];
     }
 }

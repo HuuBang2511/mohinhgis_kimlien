@@ -85,21 +85,14 @@ class ChotTuantreSearch extends ChotTuantre
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
+           
         'ten_chot',
         'loai_chot',
         'don_vi_phu_trach',
-        'phuong_xa',
-        'quan_huyen',
         'gio_truc',
         'ghi_chu',
         'lat',
         'long',
-        'geom',
-        'status',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',        ];
+              ];
     }
 }

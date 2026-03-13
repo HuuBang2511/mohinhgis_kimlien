@@ -19,7 +19,7 @@ $this->title = 'HỆ THỐNG QUẢN LÝ ĐIỂM NÓNG';
 <html lang="<?= Yii::$app->language ?>">
 
 <head>
-    <link rel="shortcut icon" href="<?= Yii::$app->homeUrl ?>images/logo_dongthanh.png" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= Yii::$app->homeUrl ?>images/logo_kimlien.png" type="image/x-icon">
     <meta charset="<?= Yii::$app->charset ?>">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">

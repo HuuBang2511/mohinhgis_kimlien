@@ -84,20 +84,12 @@ class KhuvucPhuctapAnNinhSearch extends KhuvucPhuctapAnNinh
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
         'ten',
         'loai_khuvuc',
         'muc_do_phuctap',
-        'phuong_xa',
-        'quan_huyen',
         'ghi_chu',
         'lat',
         'long',
-        'geom',
-        'status',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',        ];
+                ];
     }
 }

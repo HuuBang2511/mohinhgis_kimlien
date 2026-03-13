@@ -89,25 +89,15 @@ class DiemDenVsmtSearch extends DiemDenVsmt
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
-        'geom',
-        'OBJECTID',
-        'stt',
-        'stt_1',
+           
         'dia_chi',
         'thuc_trang',
         'de_nghi',
         'danh_gia',
-        'to_dan_pho',
         'can_bo',
         'khu_vuc',
         'lat',
         'long',
-        'status',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        'file_dinhkem',        ];
+          ];
     }
 }

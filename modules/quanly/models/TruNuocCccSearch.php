@@ -84,20 +84,13 @@ class TruNuocCccSearch extends TruNuocCcc
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
+
         'ma_tru',
         'tinh_trang',
         'ap_suat_psi',
-        'phuong_xa',
-        'quan_huyen',
         'ghi_chu',
         'lat',
         'long',
-        'geom',
-        'status',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',        ];
+               ];
     }
 }

@@ -84,20 +84,13 @@ class DiemTenannxhSearch extends DiemTenannxh
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
+
         'ten_diem',
         'loai_ten_nan',
         'muc_do_nguy_co',
-        'phuong_xa',
-        'quan_huyen',
         'tinh_trang_xu_ly',
         'lat',
         'long',
-        'geom',
-        'status',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',        ];
+        ];
     }
 }

@@ -61,6 +61,39 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="block-content">
 
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <?= $form->field($model, 'dia_diem')->textInput(['maxlength' => true]) ?>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <?= $form->field($model, 'thuc_trang')->textArea(['rows' => 2]) ?>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <?= $form->field($model, 'danh_gia')->textArea(['rows' => 2]) ?>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <?= $form->field($model, 'ghi_chu')->textArea(['rows' => 2]) ?>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-lg-6">
+                <?= $form->field($model, 'can_bo')->textInput(['maxlength' => true]) ?>
+            </div>
+            <div class="col-lg-6">
+                <?= $form->field($model, 'khu_vuc')->textInput(['maxlength' => true]) ?>
+            </div>
+        </div>
+
         <div class="row">
             <div class="tab-pane" id="filedinhkem-view">
                 <div class="row px-3">
@@ -151,8 +184,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <script>
 var map = L.map('map').setView([
-     <?= ($model->lat != null) ? $model->lat : 19.051690 ?>,
-    <?= ($model->long != null) ? $model->long : 105.536957 ?>
+     <?= ($model->lat != null) ? $model->lat : 21.007144 ?>,
+    <?= ($model->long != null) ? $model->long : 105.834918 ?>
    
 ], 16);
 
@@ -187,8 +220,8 @@ let isManualPosition = false;
 
 
 
-const marker = new L.marker([<?= ($model->lat != null) ? $model->lat : 19.051690 ?>,
-    <?= ($model->long != null) ? $model->long : 105.536957 ?>
+const marker = new L.marker([<?= ($model->lat != null) ? $model->lat : 21.007144 ?>,
+    <?= ($model->long != null) ? $model->long : 105.834918 ?>
 ], {
     'draggable': 'true',
     'icon': icon,

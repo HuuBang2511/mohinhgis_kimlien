@@ -47,11 +47,17 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="block-content">
                 <div class="row">
-                    <div class="col-lg-4">
+                    <div class="col-lg-6">
                         <?= DetailView::widget([
                             'model' => $model,
                             'attributes' => [
-                               
+                               'tuyen_pho',
+                               'thoigian',  
+                               'danh_gia',
+                               'nguyen_nhan',
+                               'giai_phap',  
+                               'can_bo',
+                               'khu_vuc',
                             ],
                         ]) ?>
 
@@ -72,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <?php endif; ?>
                         </table>
                     </div>
-                    <div class="col-lg-8">
+                    <div class="col-lg-6">
                         <div id="map"></div>
                     </div>
                 </div>
@@ -97,8 +103,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <script type="module">
    
-    var map = L.map('map').setView([<?= ($model->lat != null) ? $model->lat : '19.051690' ?>,
-        <?= ($model->long != null) ? $model->long : '105.536957' ?>
+    var map = L.map('map').setView([<?= ($model->lat != null) ? $model->lat : '21.007144' ?>,
+        <?= ($model->long != null) ? $model->long : '105.834918' ?>
     ], 18);
 
 

@@ -51,7 +51,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         <?= DetailView::widget([
                             'model' => $model,
                             'attributes' => [
-                               
+                                'dia_chi',
+                                'thuc_trang',
+                                'de_nghi',
+                                'danh_gia',
+                                'can_bo',
+                                'khu_vuc',
                             ],
                         ]) ?>
 
@@ -97,8 +102,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <script type="module">
    
-    var map = L.map('map').setView([<?= ($model->lat != null) ? $model->lat : '19.051690' ?>,
-        <?= ($model->long != null) ? $model->long : '105.536957' ?>
+    var map = L.map('map').setView([<?= ($model->lat != null) ? $model->lat : '21.007144' ?>,
+        <?= ($model->long != null) ? $model->long : '105.834918' ?>
     ], 18);
 
 

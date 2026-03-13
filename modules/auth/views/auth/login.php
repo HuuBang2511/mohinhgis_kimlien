@@ -20,7 +20,7 @@ $this->title = 'Đăng nhập';
     <?php $this->head() ?>
     <style>
         body {
-            background: url('<?= Yii::$app->request->baseUrl ?>/images/background_dongthanh.png') no-repeat center center fixed;
+            background: url('<?= Yii::$app->request->baseUrl ?>/images/banner_kimlien.jpg') no-repeat center center fixed;
             background-size: cover;
         }
         .login-card {
@@ -42,7 +42,7 @@ $this->title = 'Đăng nhập';
 <div class="container">
     <div class="card login-card bg-white p-4">
         <div class="text-center">
-            <img src="<?= Yii::$app->request->baseUrl ?>/images/logo_dongthanh.png" alt="Logo" class="logo">
+            <img src="<?= Yii::$app->request->baseUrl ?>/images/logo_kimlien.png" alt="Logo" class="logo">
             <h4 class="mb-3">Đăng nhập</h4>
         </div>
 

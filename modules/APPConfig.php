@@ -260,6 +260,43 @@ class APPConfig
                 'hasChild' => false,
             ],
         ],
+        'lopdtmt' => [
+            [
+                'name' => 'Ùn tắc giao thông',
+                'icon' => 'fa fa-list',
+                'url' => 'quanly/un-tac-giao-thong',
+                'key'=>'quanly.un-tac-giao-thong.index',
+                'hasChild' => false,
+            ],
+            [
+                'name' => 'Trật tự đô thị',
+                'icon' => 'fa fa-list',
+                'url' => 'quanly/trat-tu-do-thi',
+                'key'=>'quanly.trat-tu-do-thi.index',
+                'hasChild' => false,
+            ],
+            [
+                'name' => 'Điểm tập kết rác',
+                'icon' => 'fa fa-list',
+                'url' => 'quanly/tap-ket-rac',
+                'key'=>'quanly.tap-ket-rac.index',
+                'hasChild' => false,
+            ],
+            [
+                'name' => 'Ngập úng',
+                'icon' => 'fa fa-list',
+                'url' => 'quanly/ngap-ung',
+                'key'=>'quanly.ngap-ung.index',
+                'hasChild' => false,
+            ],
+            [
+                'name' => 'Điểm đen vsmt',
+                'icon' => 'fa fa-list',
+                'url' => 'quanly/diem-den-vsmt',
+                'key'=>'quanly.diem-den-vsmt.index',
+                'hasChild' => false,
+            ],
+        ],
         'import' => [
             [
                 'name' => 'Import dữ liệu',

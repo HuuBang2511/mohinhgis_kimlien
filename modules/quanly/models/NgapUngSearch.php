@@ -88,24 +88,13 @@ class NgapUngSearch extends NgapUng
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
-        'geom',
-        'OBJECTID',
-        'stt',
-        'stt_1',
         'vi_tri',
         'tinh_trang',
         'danh_gia',
-        'to_dan_pho',
         'can_bo',
         'khu_vuc',
         'lat',
         'long',
-        'status',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        'file_dinhkem',        ];
+               ];
     }
 }

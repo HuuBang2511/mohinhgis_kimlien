@@ -90,26 +90,16 @@ class UnTacGiaoThongSearch extends UnTacGiaoThong
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
-        'geom',
-        'OBJECTID',
-        'stt',
-        'stt_1',
+        
         'tuyen_pho',
         'thoigian',
         'danh_gia',
         'nguyen_nhan',
         'giai_phap',
-        'to_dan_pho',
         'can_bo',
         'khu_vuc',
         'lat',
         'long',
-        'status',
-        'created_at',
-        'updated_at',
-        'created_by',
-        'updated_by',
-        'file_dinhkem',        ];
+               ];
     }
 }

@@ -20,6 +20,7 @@ $lopquanlydancu = APPConfig::$CONFIG['lopquanlydancu'];
 $loptuantra = APPConfig::$CONFIG['loptuantra'];
 $lopvuviec = APPConfig::$CONFIG['lopvuviec'];
 $loppccc = APPConfig::$CONFIG['loppccc'];
+$lopdtmt = APPConfig::$CONFIG['lopdtmt'];
 $import = APPConfig::$CONFIG['import'];
 $user_id = Yii::$app->user->id;
 //dd(Yii::$app->user->identity->is_admin);
@@ -31,7 +32,7 @@ $user_id = Yii::$app->user->id;
     <div class="bg-gray-lighter">
         <div class="content-header bg-primary-darker">
             <a class="font-w600 text-white tracking-wide logo-default" href="<?= Yii::$app->homeUrl ?>">
-                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo_dongthanh.png"
+                <img src="<?= Yii::$app->homeUrl ?>resources/images/logo_kimlien.png"
                      alt="logo"
                      class="logo-default py-2">
             </a>
@@ -197,6 +198,25 @@ $user_id = Yii::$app->user->id;
                                         </a>
                                         <ul class="nav-main-submenu">
                                             <?php foreach ($loppccc as $navchild) : ?>
+                                                <?php if (\hcmgis\user\services\AuthService::can($user_id, $navchild['key']) or Yii::$app->user->identity->is_admin == true) { ?>
+                                                    <li class="nav-main-item <?= ($url == $navchild['url']) ? 'active' : '' ?>">
+                                                        <a class="nav-main-link"
+                                                           href="<?= Yii::$app->urlManager->createUrl([$navchild['url']]) ?>">
+                                                            <span class="nav-main-link-name"><?= $navchild['name'] ?></span>
+                                                        </a>
+                                                    </li>
+                                                <?php } ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-main-item" id="dulieu">
+                                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
+                                           aria-haspopup="true" aria-expanded="true" href="#">
+                                            <i class="nav-main-link-icon fa fa-list"></i>
+                                            <span class="nav-main-link-name">Lớp Đô thị - Môi trường</span>
+                                        </a>
+                                        <ul class="nav-main-submenu">
+                                            <?php foreach ($lopdtmt as $navchild) : ?>
                                                 <?php if (\hcmgis\user\services\AuthService::can($user_id, $navchild['key']) or Yii::$app->user->identity->is_admin == true) { ?>
                                                     <li class="nav-main-item <?= ($url == $navchild['url']) ? 'active' : '' ?>">
                                                         <a class="nav-main-link"

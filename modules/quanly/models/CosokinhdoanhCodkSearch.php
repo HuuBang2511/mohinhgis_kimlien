@@ -87,23 +87,17 @@ class CosokinhdoanhCodkSearch extends CosokinhdoanhCodk
             [
                 'class' => 'kartik\grid\SerialColumn',
             ],
-            'id',
+    
         'ten_co_so',
         'loai_hinh_kinh_doanh',
         'chu_so_huu',
         'so_dien_thoai',
         'giay_phep_so',
         'ngay_cap',
-        'phuong_xa',
-        'quan_huyen',
         'trang_thai_hoat_dong',
         'lat',
         'long',
         'geom',
-        'status',
-        'created_at',
-        'created_by',
-        'updated_at',
-        'updated_by',        ];
+             ];
     }
 }
