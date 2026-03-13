@@ -159,6 +159,53 @@ function get_badge_class($layerName, $badgeText) {
         border-top: 1px solid #f1f5f9; /* slate-100 */
     }
     .layer-sublist-item:first-child { border-top: none; padding-top: 0; }
+    .kpi-clickable {
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        align-items: center;
+    }
+    .kpi-clickable:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .layer-kpi-link {
+        text-decoration: none;
+        color: inherit;
+    }
+    .layer-kpi-link:hover .layer-kpi-value {
+        text-decoration: underline;
+        color: #2563eb;
+    }
+    .doughnut-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .doughnut-center {
+        position: absolute;
+        text-align: center;
+        pointer-events: none;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .doughnut-center-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        line-height: 1;
+    }
+    .doughnut-center-label {
+        font-size: 0.7rem;
+        color: #64748b;
+        margin-top: 4px;
+    }
 </style>
 
 <div class="quanly-dashboard p-4 sm:p-6 lg:p-8 space-y-6">
@@ -167,7 +214,7 @@ function get_badge_class($layerName, $badgeText) {
     <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
         <div>
             <h1 class="text-3xl font-bold text-slate-800"><?= Html::encode($this->title) ?></h1>
-            <p class="text-slate-500 mt-1">Bảng điều hành nghiệp vụ ANTT Phường Kim Liên.</p>
+            <p class="text-slate-500 mt-1">Bảng điều hành nghiệp vụ ANTT Phường Kim Liên</p>
         </div>
         <div class="flex gap-3 items-center">
             <!-- Đã gỡ bỏ ô "Địa bàn" -->
@@ -180,35 +227,56 @@ function get_badge_class($layerName, $badgeText) {
     </div>
 
     <!-- === Hàng 1: KPIs Tác Nghiệp Chính === -->
+    <?php
+        // ID trạng thái "Đã giải quyết" - dùng cho filter quá hạn (logic đặc biệt: trang_thai_hien_tai_id=4 → quá hạn)
+        $trangThaiDaGiaiQuyetObj = \app\modules\quanly\models\TrangThaiXuLy::findOne(['ten_trang_thai' => 'Đã giải quyết', 'status' => 1]);
+        $idDaGiaiQuyetFilter = $trangThaiDaGiaiQuyetObj ? $trangThaiDaGiaiQuyetObj->id : 4;
+    ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="card kpi-card">
+
+        
+        <a href="<?= Url::to(['/quanly/vu-viec/index',
+            'VuViecSearch[ngay_tiep_nhan]' => date('Y-m-d'),
+        ]) ?>" class="card kpi-card kpi-clickable">
             <div class="kpi-icon bg-blue-100 text-blue-600"><i data-lucide="alert-circle"></i></div>
             <div>
                 <div class="kpi-value"><?= $kpis['vuViecHomNay'] ?></div>
                 <div class="kpi-label">Vụ việc mới trong ngày</div>
             </div>
-        </div>
-        <div class="card kpi-card">
+        </a>
+
+        
+        <a href="<?= Url::to(['/quanly/vu-viec/index',
+            'VuViecSearch[muc_do_canh_bao]' => 'Đỏ',
+        ]) ?>" class="card kpi-card kpi-clickable">
             <div class="kpi-icon bg-red-100 text-red-600"><i data-lucide="shield-alert"></i></div>
             <div>
                 <div class="kpi-value"><?= $kpis['canhBaoDoHoatDong'] ?></div>
                 <div class="kpi-label">Cảnh báo Đỏ đang hoạt động</div>
             </div>
-        </div>
-        <div class="card kpi-card">
+        </a>
+
+        
+        <a href="<?= Url::to(['/quanly/vu-viec/index',
+            'VuViecSearch[trang_thai_hien_tai_id]' => $idDaGiaiQuyetFilter,
+        ]) ?>" class="card kpi-card kpi-clickable">
             <div class="kpi-icon bg-yellow-100 text-yellow-600"><i data-lucide="calendar-clock"></i></div>
             <div>
                 <div class="kpi-value"><?= $kpis['sapDenHan'] ?></div>
                 <div class="kpi-label">Vụ việc sắp đến hạn (3 ngày)</div>
             </div>
-        </div>
-        <div class="card kpi-card">
+        </a>
+
+        
+        <a href="<?= Url::to(['/quanly/nguoi-dan/index',
+            'NguoiDanSearch[nhom_doi_tuong]' => 'Tiền án',
+        ]) ?>" class="card kpi-card kpi-clickable">
             <div class="kpi-icon bg-indigo-100 text-indigo-600"><i data-lucide="users"></i></div>
             <div>
                 <div class="kpi-value"><?= $kpis['doiTuongQuanTam'] ?></div>
                 <div class="kpi-label">Đối tượng cần quan tâm</div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- === Hàng 2: Trung tâm Tác nghiệp (Cảnh báo & Quá hạn) === -->
@@ -260,6 +328,36 @@ function get_badge_class($layerName, $badgeText) {
     </div>
 
     <!-- === Hàng 3: 6 Lớp Chuyên Đề Nghiệp Vụ === -->
+    <?php
+    // Map các layer -> URL danh sách tương ứng
+    $layerUrls = [
+        'vuViec' => [
+            'Vụ việc đang xử lý' => Url::to(['/quanly/vu-viec/index', 'VuViecSearch[da_giai_quyet]' => '0']),
+            'Điểm nhạy cảm'      => Url::to(['/quanly/diem-nhay-cam/index']),
+        ],
+        'anNinh' => [
+            'Mục tiêu trọng điểm' => Url::to(['/quanly/muctieu-trongdiem/index']),
+            'Khu vực phức tạp'    => Url::to(['/quanly/khuvuc-phuctap-an-ninh/index']),
+        ],
+        'tratTuXaHoi' => [
+            'Điểm tệ nạn'      => Url::to(['/quanly/diem-tenannxh/index']),
+            'Cơ sở KD có ĐK'   => Url::to(['/quanly/cosokinhdoanh-codk/index']),
+        ],
+        'quanLyDanCu' => [
+            'Tổng nhân khẩu'       => Url::to(['/quanly/nguoi-dan/index']),
+            'Đối tượng quan tâm'   => Url::to(['/quanly/nguoi-dan/index', 'NguoiDanSearch[nhom_doi_tuong_khac]' => '1']),
+        ],
+        'tuanTraGiamSat' => [
+            'Camera An ninh'  => Url::to(['/quanly/camera-an-ninh/index']),
+            'Chốt tuần tra'   => Url::to(['/quanly/chot-tuantre/index']),
+        ],
+        'pccc' => [
+            'Cơ sở nguy cơ cháy' => Url::to(['/quanly/cosonguyco-chayno/index']),
+            'Nguồn nước CCC'      => Url::to(['/quanly/nguon-nuoc-ccc/index']),
+            'Trụ nước CCC'        => Url::to(['/quanly/tru-nuoc-ccc/index']),
+        ],
+    ];
+    ?>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         
         <!-- Lớp Vụ Việc -->
@@ -269,8 +367,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['vuViec']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['vuViec'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -292,8 +392,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['anNinh']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['anNinh'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -315,8 +417,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['tratTuXaHoi']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['tratTuXaHoi'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -338,8 +442,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['quanLyDanCu']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['quanLyDanCu'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -361,8 +467,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['tuanTraGiamSat']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['tuanTraGiamSat'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -384,8 +492,10 @@ function get_badge_class($layerName, $badgeText) {
                 <div class="layer-kpi-list">
                     <?php foreach ($layerData['pccc']['counts'] as $label => $value): ?>
                     <div class="layer-kpi-item">
-                        <span class="layer-kpi-value"><?= $value ?></span>
-                        <span class="layer-kpi-label"><?= $label ?></span>
+                        <a href="<?= $layerUrls['pccc'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
+                            <span class="layer-kpi-value"><?= $value ?></span>
+                            <span class="layer-kpi-label"><?= $label ?></span>
+                        </a>
                     </div>
                     <?php endforeach; ?>
                 </div>
@@ -413,7 +523,15 @@ function get_badge_class($layerName, $badgeText) {
         <!-- Tình Trạng Xử Lý -->
         <div class="card">
             <h2 class="card-title"><i data-lucide="pie-chart" class="text-green-500"></i>Tình Trạng Xử Lý Vụ Việc</h2>
-            <div class="card-content h-72 flex items-center justify-center"><canvas id="statusChart"></canvas></div>
+            <div class="card-content h-72">
+                <div class="doughnut-wrapper">
+                    <canvas id="statusChart"></canvas>
+                    <div class="doughnut-center" id="doughnutCenter">
+                        <div class="doughnut-center-value" id="doughnutTotal">-</div>
+                        <div class="doughnut-center-label">Tổng vụ việc</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -423,13 +541,9 @@ function get_badge_class($layerName, $badgeText) {
 document.addEventListener('DOMContentLoaded', function () {
     lucide.createIcons();
 
-    // === KHỞI TẠO BIỂU ĐỒ ===
     const chartConfig = {
         plugins: { 
-            legend: { 
-                labels: { color: '#475569', font: { family: 'inherit' } },
-                position: 'bottom'
-            } 
+            legend: { labels: { color: '#475569', font: { family: 'inherit' } }, position: 'bottom' } 
         },
         scales: {
             y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#64748b' } },
@@ -441,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const chartColors = ['#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#06b6d4', '#f97316', '#14b8a6', '#6366f1'];
 
     // 1. Trend Chart (Line)
-    const trendCtx = document.getElementById('trendChart')?.getContext('d');
+    const trendCtx = document.getElementById('trendChart')?.getContext('2d');
     if (trendCtx) {
         const trendData = <?= $trendChartDataJson ?>;
         const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
@@ -465,11 +579,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // 2. Status Chart (Doughnut)
-    const statusCtx = document.getElementById('statusChart')?.getContext('d');
+    // 2. Status Chart (Doughnut) với center text
+    const statusCtx = document.getElementById('statusChart')?.getContext('2d');
     if (statusCtx) {
         const statusData = <?= $statusChartDataJson ?>;
-        new Chart(statusCtx, {
+        const total = statusData.data.reduce((a, b) => a + b, 0);
+        const totalEl = document.getElementById('doughnutTotal');
+        if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN');
+
+        const statusChart = new Chart(statusCtx, {
             type: 'doughnut',
             data: {
                 labels: statusData.labels,
@@ -482,12 +600,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 }]
             },
             options: { 
-                responsive: true, 
-                plugins: { legend: { position: 'bottom', labels: { color: '#475569', font: { family: 'inherit' } } } }, 
-                cutout: '70%' 
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { 
+                    legend: { position: 'bottom', labels: { color: '#475569', font: { family: 'inherit' } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                const pct = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
+                                return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                            }
+                        }
+                    }
+                }, 
+                cutout: '68%',
+                // Cập nhật center text khi hover
+                onHover: function(evt, elements) {
+                    if (!totalEl) return;
+                    if (elements.length > 0) {
+                        const idx = elements[0].index;
+                        const val = statusData.data[idx];
+                        const pct = total > 0 ? Math.round(val / total * 100) : 0;
+                        totalEl.textContent = val.toLocaleString('vi-VN');
+                        totalEl.nextElementSibling.textContent = statusData.labels[idx] + ' (' + pct + '%)';
+                    } else {
+                        totalEl.textContent = total.toLocaleString('vi-VN');
+                        totalEl.nextElementSibling.textContent = 'Tổng vụ việc';
+                    }
+                }
             }
         });
     }
 });
 </script>
-
