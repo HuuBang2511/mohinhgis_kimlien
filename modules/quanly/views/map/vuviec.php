@@ -9,7 +9,7 @@ app\widgets\maps\plugins\markercluster\MarkerClusterAsset::register($this);
 app\widgets\maps\plugins\leaflet_measure\LeafletMeasureAsset::register($this);
 app\widgets\maps\plugins\leafletlocate\LeafletLocateAsset::register($this);
 
-$this->title = 'Bản đồ GIS';
+$this->title = 'Bản đồ số quản lý đô thị - UBND Phường Kim Liên, TP. Hà Nội';
 $this->params['hideHero'] = true;
 
 // Tạo URL cơ sở cho tất cả các trang chi tiết
@@ -17,6 +17,22 @@ $vuViecDetailUrlBase = Url::to(['/quanly/vu-viec/view']);
 $nocGiaDetailUrlBase = Url::to(['/quanly/noc-gia/view']);
 $diemNhayCamDetailUrlBase = Url::to(['/quanly/diem-nhay-cam/view']);
 $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
+$cameraDetailUrlBase = Url::to(['/quanly/camera-an-ninh/view']);
+$chotTuanTraDetailUrlBase = Url::to(['/quanly/chot-tuantre/view']);
+$coSoKinhDoanhDetailUrlBase = Url::to(['/quanly/cosokinhdoanh-codk/view']);
+$diemTeNanDetailUrlBase = Url::to(['/quanly/diem-tenannxh/view']);
+$khuVucPhucTapDetailUrlBase = Url::to(['/quanly/khuvuc-phuctap-an-ninh/view']);
+$mucTieuTrongDiemDetailUrlBase = Url::to(['/quanly/muctieu-trongdiem/view']);
+$ngapUngDetailUrlBase = Url::to(['/quanly/ngap-ung/view']);
+$nguonNuocCccDetailUrlBase = Url::to(['/quanly/nguon-nuoc-ccc/view']);
+$tapKetRacDetailUrlBase = Url::to(['/quanly/tap-ket-rac/view']);
+$tratTuDoThiDetailUrlBase = Url::to(['/quanly/trat-tu-do-thi/view']);
+$truNuocCccDetailUrlBase = Url::to(['/quanly/tru-nuoc-ccc/view']);
+$unTacGiaoThongDetailUrlBase = Url::to(['/quanly/un-tac-giao-thong/view']);
+$phuongXaDetailUrlBase = Url::to(['/quanly/phuongxa/view']);
+$khuPhoDetailUrlBase = Url::to(['/quanly/kp/view']);
+$coSoChayNoDetailUrlBase = Url::to(['/quanly/cosonguyco-chayno/view']);
+$diemDenVsmtDetailUrlBase = Url::to(['/quanly/diem-den-vsmt/view']);
 ?>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
@@ -79,7 +95,13 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
         display: flex; justify-content: space-between; align-items: center;
         padding: 10px 15px; border-bottom: 1px solid var(--border-color); flex-shrink: 0;
     }
-    .tabs-header img { width: auto; height: 40px; display: block; }
+    .header-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--primary-color);
+        line-height: 1.3;
+        flex: 1;
+    }
 
     .tab-buttons { display: flex; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
     .tab-button {
@@ -269,8 +291,8 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
 <div id="mapInfo">
     <div id="tabs">
         <div class="tabs-header">
-            <a href="<?= Yii::$app->homeUrl ?>" target="_blank">
-                <img src="https://datafiles.hanoi.gov.vn/gov-hni/6942/2025/bau%20cu-757848.jpg" alt="Logo">
+            <a href="<?= Yii::$app->homeUrl ?>" target="_blank" style="display: flex; align-items: center; text-decoration: none;">
+                <div class="header-title">Bản đồ số quản lý đô thị<br><span style="font-size: 11px; font-weight: 500; color: var(--text-light-color);">UBND Phường Kim Liên, TP. Hà Nội</span></div>
             </a>
             <button id="back-to-map-mobile-btn"></button>
         </div>
@@ -278,7 +300,7 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
         <div class="tab-buttons">
             <button class="tab-button active" data-tab="layer">Lớp dữ liệu</button>
             <button class="tab-button" data-tab="info">Thông tin</button>
-            <button class="tab-button" data-tab="report">Người dân báo cáo</button>
+            <button class="tab-button" data-tab="report">Cán bộ hiện trường/người dân</button>
         </div>
 
         <div id="layer-content" class="tab-content active">
@@ -300,6 +322,14 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
                                 Các lớp dữ liệu nền
                             </summary>
                             <ul>
+                                <li class="layer-tree-item">
+                                    <i data-lucide="layers" class="icon"></i>
+                                    <label>
+                                        <span>Vùng giới hạn (Mask)</span>
+                                        <input type="checkbox" checked data-layer-id="wmsKimLienMaskLayer" data-layer-type="wms" data-z-index="400" 
+                                               data-wms-name="mohinhgis_kimlien:kimlien_mask" data-display-name="Vùng giới hạn">
+                                    </label>
+                                </li>
                                 <li class="layer-tree-item">
                                     <i data-lucide="map" class="icon"></i>
                                     <label>
@@ -327,266 +357,69 @@ $diemTrongDiemDetailUrlBase = Url::to(['/quanly/diem-trong-diem/view']);
                                                data-popup-fields='{"name": "Tên đường", "fclass": "Loại đường", "ref": "Số hiệu", "oneway": "Một chiều", "maxspeed": "Tốc độ"}'>
                                     </label>
                                 </li>
+
+
+                            </ul>
+                        </details>
+                    </li>
+
+                    <!-- NHÓM 2: DỮ LIỆU CHUYÊN ĐỀ QUẢN LÝ ĐÔ THỊ -->
+                    <li>
+                        <details open>
+                            <summary>
+                                <i data-lucide="shield-check" class="icon"></i>
+                                Dữ liệu chuyên đề Quản lý đô thị
+                            </summary>
+                            <ul>
                                 <li class="layer-tree-item">
-                                    <i data-lucide="map" class="icon"></i>
+                                    <i data-lucide="car" class="icon"></i>
                                     <label>
-                                        <span>Thủy hệ</span>
-                                        <input type="checkbox" data-layer-id="wmsThuyheLayer" data-layer-type="wms" data-z-index="500" 
-                                               data-wms-name="mohinhgis_pa05:thuyhe" data-display-name="Thủy hệ" 
-                                               data-popup-fields='{"name": "Tên"}'>
+                                        <span>Ùn tắc giao thông</span>
+                                        <input type="checkbox" checked data-layer-id="wmsUnTacGiaoThongLayer" data-layer-type="wms" data-z-index="571"
+                                               data-wms-name="mohinhgis_pa05:un_tac_qiao_thong" data-display-name="Ùn tắc giao thông"
+                                               data-popup-fields='{"dia_chi": "Địa chỉ", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
                                     </label>
                                 </li>
                                 <li class="layer-tree-item">
-                                    <i data-lucide="building" class="icon"></i>
+                                    <i data-lucide="shield-off" class="icon"></i>
                                     <label>
-                                        <span>Tòa nhà</span>
-                                        <input type="checkbox" data-layer-id="wmsBuildingLayer" data-layer-type="wms" data-z-index="460" 
-                                               data-wms-name="mohinhgis_pa05:buildings" data-display-name="Tòa nhà" 
-                                               data-popup-fields='{"fid" : "fid", "confidence" : "confidence"}'>
+                                        <span>Trật tự đô thị</span>
+                                        <input type="checkbox" checked data-layer-id="wmsTratTuDoThiLayer" data-layer-type="wms" data-z-index="572"
+                                               data-wms-name="mohinhgis_pa05:trat_tu_do_thi" data-display-name="Trật tự đô thị"
+                                               data-popup-fields='{"dia_diem": "Địa điểm", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "ghi_chu": "Ghi chú", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
                                     </label>
                                 </li>
                                 <li class="layer-tree-item">
-                                    <i data-lucide="map-pin-house" class="icon"></i>
+                                    <i data-lucide="trash-2" class="icon"></i>
                                     <label>
-                                        <span>KTVHXH (POIs)</span>
-                                        <input type="checkbox" data-layer-id="wmsKtvhxhLayer" data-layer-type="wms" data-z-index="530" 
-                                               data-wms-name="mohinhgis_pa05:pois" data-display-name="KTVHXH" 
-                                               data-popup-fields='{"name": "Tên"}'>
+                                        <span>Điểm tập kết rác</span>
+                                        <input type="checkbox" checked data-layer-id="wmsTapKetRacLayer" data-layer-type="wms" data-z-index="573"
+                                               data-wms-name="mohinhgis_pa05:tap_ket_rac" data-display-name="Điểm tập kết rác"
+                                               data-popup-fields='{"ten_diem": "Tên điểm", "phuong": "Phường", "loaihinh": "Loại hình", "vitri": "Vị trí", "quymo": "Quy mô", "kha_nang": "Khả năng", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
+                                    </label>
+                                </li>
+                                <li class="layer-tree-item">
+                                    <i data-lucide="droplets" class="icon"></i>
+                                    <label>
+                                        <span>Ngập úng</span>
+                                        <input type="checkbox" checked data-layer-id="wmsNgapUngLayer" data-layer-type="wms" data-z-index="574"
+                                               data-wms-name="mohinhgis_pa05:ngap_ung" data-display-name="Ngập úng"
+                                               data-popup-fields='{"vi_tri": "Vị trí", "tinh_trang": "Tình trạng", "danh_gia": "Đánh giá", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
+                                    </label>
+                                </li>
+                                <li class="layer-tree-item">
+                                    <i data-lucide="recycle" class="icon"></i>
+                                    <label>
+                                        <span>Điểm đen VSMT</span>
+                                        <input type="checkbox" checked data-layer-id="wmsDiemDenVsmtLayer" data-layer-type="wms" data-z-index="575"
+                                               data-wms-name="mohinhgis_pa05:diem_den_vsmt" data-display-name="Điểm đen VSMT"
+                                               data-popup-fields='{"dia_chi": "Địa chỉ", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "de_nghi": "Đề nghị", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
                                     </label>
                                 </li>
                             </ul>
                         </details>
                     </li>
 
-                    <!-- NHÓM 2: DỮ LIỆU CHUYÊN ĐỀ ANTT -->
-                    <li>
-                        <details open>
-                            <summary>
-                                <i data-lucide="shield-check" class="icon"></i>
-                                Dữ liệu chuyên đề ANTT
-                            </summary>
-                            <ul>
-                                <!-- 2.1 Lớp An ninh -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="lock" class="icon"></i> Lớp An ninh</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="focus" class="icon"></i>
-                                                <label>
-                                                    <span>Mục tiêu trọng điểm</span>
-                                                    <input type="checkbox" data-layer-id="wmsMucTieuTrongDiemLayer" data-layer-type="wms" data-z-index="562" 
-                                                           data-wms-name="mohinhgis_pa05:muctieu_trongdiem" data-display-name="Mục tiêu trọng điểm" 
-                                                           data-popup-fields='{"ten": "Tên mục tiêu", "loai_muctieu": "Loại mục tiêu", "dia_chi": "Địa chỉ", "trang_thai_an_ninh": "Trạng thái AN"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="shield-alert" class="icon"></i>
-                                                <label>
-                                                    <span>Khu vực phức tạp AN</span>
-                                                    <input type="checkbox" data-layer-id="wmsKhuVucPhucTapLayer" data-layer-type="wms" data-z-index="563" 
-                                                           data-wms-name="mohinhgis_pa05:khuvuc_phuctap_an_ninh" data-display-name="Khu vực phức tạp AN" 
-                                                           data-popup-fields='{"ten": "Tên khu vực", "loai_khuvuc": "Loại khu vực", "muc_do_phuctap": "Mức độ phức tạp"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.2 Lớp Trật tự Xã hội -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="users" class="icon"></i> Lớp Trật tự Xã hội</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="store" class="icon"></i>
-                                                <label>
-                                                    <span>Cơ sở kinh doanh có ĐK</span>
-                                                    <input type="checkbox" data-layer-id="wmsCoSoKinhDoanhLayer" data-layer-type="wms" data-z-index="566" 
-                                                           data-wms-name="mohinhgis_pa05:cosokinhdoanh_codk" data-display-name="Cơ sở kinh doanh có ĐK" 
-                                                           data-popup-fields='{"ten_co_so": "Tên cơ sở", "loai_hinh_kinh_doanh": "Loại hình KD", "chu_so_huu": "Chủ sở hữu", "trang_thai_hoat_dong": "Trạng thái"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="ban" class="icon"></i>
-                                                <label>
-                                                    <span>Điểm tệ nạn XH</span>
-                                                    <input type="checkbox" data-layer-id="wmsDiemTeNanLayer" data-layer-type="wms" data-z-index="564" 
-                                                           data-wms-name="mohinhgis_pa05:diem_tenannxh" data-display-name="Điểm tệ nạn XH" 
-                                                           data-popup-fields='{"ten_diem": "Tên điểm", "loai_ten_nan": "Loại tệ nạn", "muc_do_nguy_co": "Mức độ", "tinh_trang_xu_ly": "Xử lý"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.3 Lớp Quản lý Dân cư -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="home" class="icon"></i> Lớp Quản lý Dân cư</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="home" class="icon"></i>
-                                                <label>
-                                                    <span>Nóc gia</span>
-                                                    <input type="checkbox" data-layer-id="wmsNocgiaLayer" data-layer-type="wms" data-z-index="520" 
-                                                           data-wms-name="mohinhgis_pa05:noc_gia" data-display-name="Nóc gia" 
-                                                           data-popup-fields='{"so_nha": "Số nhà", "ten_duong" : "Tên đường"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.4 Lớp Tuần tra - Giám sát -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="camera" class="icon"></i> Lớp Tuần tra - Giám sát</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="camera" class="icon"></i>
-                                                <label>
-                                                    <span>Camera an ninh</span>
-                                                    <input type="checkbox" data-layer-id="wmsCameraAnNinhLayer" data-layer-type="wms" data-z-index="568" 
-                                                           data-wms-name="mohinhgis_pa05:camera_an_ninh" data-display-name="Camera an ninh" 
-                                                           data-popup-fields='{"ma_camera": "Mã camera", "ten_diem": "Tên điểm", "dia_chi": "Địa chỉ", "don_vi_quan_ly": "ĐV quản lý", "trang_thai": "Trạng thái", "nguon_du_lieu": "Nguồn dữ liệu"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="shield" class="icon"></i>
-                                                <label>
-                                                    <span>Chốt tuần tra</span>
-                                                    <input type="checkbox" data-layer-id="wmsChotTuanTraLayer" data-layer-type="wms" data-z-index="567" 
-                                                           data-wms-name="mohinhgis_pa05:chot_tuantre" data-display-name="Chốt tuần tra" 
-                                                           data-popup-fields='{"ten_chot": "Tên chốt", "loai_chot": "Loại chốt", "don_vi_phu_trach": "ĐV phụ trách", "gio_truc": "Giờ trực"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.5 Lớp Vụ việc -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="alert-triangle" class="icon"></i> Lớp phản ánh hiện trường</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="map-pin" class="icon"></i>
-                                                <label>
-                                                    <span>Lớp vụ việc</span>
-                                                    <input type="checkbox" data-layer-id="wmsVuviecLayer" data-layer-type="wms" data-z-index="550" 
-                                                           data-wms-name="mohinhgis_pa05:vu_viec" data-display-name="Lớp vụ việc" 
-                                                           data-popup-fields='{"ma_vu_viec": "Mã vụ việc", "tom_tat_noi_dung" : "Tóm tắt nội dung"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="siren" class="icon"></i>
-                                                <label>
-                                                    <span>Phản ánh của dân</span>
-                                                    <input type="checkbox" data-layer-id="wmsDiemnhaycamLayer" data-layer-type="wms" data-z-index="540" 
-                                                           data-wms-name="mohinhgis_pa05:diem_nhay_cam" data-display-name="Điểm nhạy cảm" 
-                                                           data-popup-fields='{"tenloaihinh": "Tên loại hình", "thongtin": "Thông tin"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="target" class="icon"></i>
-                                                <label>
-                                                    <span>Điểm về rác thải</span>
-                                                    <input type="checkbox" data-layer-id="wmsDiemtrongdiemLayer" data-layer-type="wms" data-z-index="530" 
-                                                           data-wms-name="mohinhgis_pa05:diem_trong_diem" data-display-name="Điểm trọng điểm" 
-                                                           data-popup-fields='{"tenloaihinh": "Tên loại hình", "thongtin": "Thông tin"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.6b Lớp Đô thị - Môi trường -->
-                                <li>
-                                    <details open>
-                                        <summary><i data-lucide="leaf" class="icon"></i> Lớp Đô thị - Môi trường</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="car" class="icon"></i>
-                                                <label>
-                                                    <span>Ùn tắc giao thông</span>
-                                                    <input type="checkbox" checked data-layer-id="wmsUnTacGiaoThongLayer" data-layer-type="wms" data-z-index="571"
-                                                           data-wms-name="mohinhgis_pa05:un_tac_qiao_thong" data-display-name="Ùn tắc giao thông"
-                                                           data-popup-fields='{"dia_chi": "Địa chỉ", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="shield-off" class="icon"></i>
-                                                <label>
-                                                    <span>Trật tự đô thị</span>
-                                                    <input type="checkbox" checked data-layer-id="wmsTratTuDoThiLayer" data-layer-type="wms" data-z-index="572"
-                                                           data-wms-name="mohinhgis_pa05:trat_tu_do_thi" data-display-name="Trật tự đô thị"
-                                                           data-popup-fields='{"dia_diem": "Địa điểm", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "ghi_chu": "Ghi chú", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="trash-2" class="icon"></i>
-                                                <label>
-                                                    <span>Điểm tập kết rác</span>
-                                                    <input type="checkbox" checked data-layer-id="wmsTapKetRacLayer" data-layer-type="wms" data-z-index="573"
-                                                           data-wms-name="mohinhgis_pa05:tap_ket_rac" data-display-name="Điểm tập kết rác"
-                                                           data-popup-fields='{"ten_diem": "Tên điểm", "phuong": "Phường", "loaihinh": "Loại hình", "vitri": "Vị trí", "quymo": "Quy mô", "kha_nang": "Khả năng", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="droplets" class="icon"></i>
-                                                <label>
-                                                    <span>Ngập úng</span>
-                                                    <input type="checkbox" checked data-layer-id="wmsNgapUngLayer" data-layer-type="wms" data-z-index="574"
-                                                           data-wms-name="mohinhgis_pa05:ngap_ung" data-display-name="Ngập úng"
-                                                           data-popup-fields='{"vi_tri": "Vị trí", "tinh_trang": "Tình trạng", "danh_gia": "Đánh giá", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="recycle" class="icon"></i>
-                                                <label>
-                                                    <span>Điểm đen VSMT</span>
-                                                    <input type="checkbox" checked data-layer-id="wmsDiemDenVsmtLayer" data-layer-type="wms" data-z-index="575"
-                                                           data-wms-name="mohinhgis_pa05:diem_den_vsmt" data-display-name="Điểm đen VSMT"
-                                                           data-popup-fields='{"dia_chi": "Địa chỉ", "thuc_trang": "Thực trạng", "danh_gia": "Đánh giá", "de_nghi": "Đề nghị", "to_dan_pho": "Tổ dân phố", "khu_vuc": "Khu vực", "can_bo": "Cán bộ"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                                <!-- 2.6 Lớp PCCC -->
-                                <li>
-                                    <details>
-                                        <summary><i data-lucide="flame" class="icon"></i> Lớp PCCC</summary>
-                                        <ul>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="hydrant" class="icon"></i>
-                                                <label>
-                                                    <span>Trụ nước PCCC</span>
-                                                    <input type="checkbox" data-layer-id="wmsTruNuocCccLayer" data-layer-type="wms" data-z-index="560" 
-                                                           data-wms-name="mohinhgis_pa05:tru_nuoc_ccc" data-display-name="Trụ nước PCCC" 
-                                                           data-popup-fields='{"ma_tru": "Mã trụ", "tinh_trang": "Tình trạng", "ap_suat_psi": "Áp suất (PSI)"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="droplet" class="icon"></i>
-                                                <label>
-                                                    <span>Nguồn nước PCCC</span>
-                                                    <input type="checkbox" data-layer-id="wmsNguonNuocCccLayer" data-layer-type="wms" data-z-index="561" 
-                                                           data-wms-name="mohinhgis_pa05:nguon_nuoc_ccc" data-display-name="Nguồn nước PCCC" 
-                                                           data-popup-fields='{"ten_nguon": "Tên nguồn", "loai_nguon": "Loại nguồn", "dung_tich_m3": "Dung tích (m³)"}'>
-                                                </label>
-                                            </li>
-                                            <li class="layer-tree-item">
-                                                <i data-lucide="flame" class="icon"></i>
-                                                <label>
-                                                    <span>Cơ sở nguy cơ cháy nổ</span>
-                                                    <input type="checkbox" data-layer-id="wmsCoSoChayNoLayer" data-layer-type="wms" data-z-index="565" 
-                                                           data-wms-name="mohinhgis_pa05:cosonguyco_chayno" data-display-name="Cơ sở nguy cơ cháy nổ" 
-                                                           data-popup-fields='{"ten_co_so": "Tên cơ sở", "loai_hinh": "Loại hình", "muc_do_nguy_co": "Mức độ nguy cơ"}'>
-                                                </label>
-                                            </li>
-                                        </ul>
-                                    </details>
-                                </li>
-                            </ul>
-                        </details>
-                    </li>
                 </ul>
             </div>
             <!-- KẾT THÚC CẤU TRÚC CÂY THƯ MỤC -->
@@ -654,8 +487,8 @@ document.addEventListener('DOMContentLoaded', function () {
         DETAIL_URLS: {
             vuViec: '<?= $vuViecDetailUrlBase ?>',
             nocGia: '<?= $nocGiaDetailUrlBase ?>',
-            diemNhayCam: '<?= $diemNhayCamDetailUrlBase ?>',
-            diemTrongDiem: '<?= $diemTrongDiemDetailUrlBase ?>',
+            phuongXa: '<?= $phuongXaDetailUrlBase ?>',
+            khuPho: '<?= $khuPhoDetailUrlBase ?>',
         },
         MAP_CENTER: [21.007144, 105.834918],
         MAP_ZOOM: 16,
@@ -679,8 +512,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 L.control.zoom({ position: 'topright' }).addTo(App.map);
 
                 const baseMaps = {
-                    "Bản đồ Google": L.tileLayer('https://{s}.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', { maxZoom: 22, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] }).addTo(App.map),
-                    "Ảnh vệ tinh": L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', { maxZoom: 22, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'] })
+                    "Bản đồ Google": L.tileLayer('https://{s}.google.com/vt/lyrs=r&x={x}&y={y}&z={z}', { maxZoom: 22, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], opacity: 0.7 }).addTo(App.map),
+                    "Ảnh vệ tinh": L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', { maxZoom: 22, subdomains: ['mt0', 'mt1', 'mt2', 'mt3'], opacity: 0.7 })
                 };
 
                 App.map.createPane('highlightPane').style.zIndex = 700;
@@ -917,10 +750,12 @@ document.addEventListener('DOMContentLoaded', function () {
                         case 'wmsDiemnhaycamLayer':
                             detailUrl = `${App.DETAIL_URLS.diemNhayCam}?id=${numericId}`;
                             break;
-                        case 'wmsDiemtrongdiemLayer':
-                            detailUrl = `${App.DETAIL_URLS.diemTrongDiem}?id=${numericId}`;
+                        case 'wmsPhuongXaLayer':
+                            detailUrl = `${App.DETAIL_URLS.phuongXa}?id=${numericId}`;
                             break;
-                        // TODO: Thêm case cho các layer mới nếu chúng có trang chi tiết
+                        case 'wmsKhuphoLayer':
+                            detailUrl = `${App.DETAIL_URLS.khuPho}?id=${numericId}`;
+                            break;
                     }
                 }
 
