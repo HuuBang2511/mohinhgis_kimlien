@@ -1,15 +1,12 @@
 <?php
 /**
- * BẢNG ĐIỀU HÀNH NGHIỆP VỤ ANTT (CHO CÔNG AN PHƯỜNG) - v3
- * Thiết kế theo 6 lớp chuyên đề, bỏ bản đồ, bỏ lọc phường.
+ * BẢNG ĐIỀU KHIỂN QUẢN LÝ ĐÔ THỊ
+ * Thiết kế cho Quản lý đô thị với 5 lớp chuyên đề
  *
  * @var yii\web\View $this
- * @var array $kpis
- * @var array $topCanhBaoDo
- * @var array $topQuaHan
- * @var array $layerData (Dữ liệu 6 lớp chuyên đề)
- * @var array $trendChartData
  * @var array $statusChartData
+ * @var array $chartData
+ * @var array $layerData
  */
 
 use yii\helpers\Html;
@@ -17,36 +14,16 @@ use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 
-$this->title = 'Bảng điều hành nghiệp vụ ANTT'; // Đã bỏ tên phường
+$this->title = 'BẢNG ĐIỀU KHIỂN QUẢN LÝ ĐÔ THỊ';
 $this->params['breadcrumbs'][] = $this->title;
 
 // Mã hóa dữ liệu để truyền cho JavaScript
-$trendChartDataJson = Json::encode($trendChartData);
 $statusChartDataJson = Json::encode($statusChartData);
+$chartDataJson = Json::encode($chartData);
+$layerDataJson = Json::encode($layerData);
 
 // URL Bản đồ
 $mapUrl = Url::to(['/quanly/map/vuviec']);
-
-// Helper function để hiển thị badge cho 6 lớp
-function get_badge_class($layerName, $badgeText) {
-    $base = "badge text-xs font-semibold px-2 py-0.5 rounded-full ";
-    switch ($layerName) {
-        case 'anNinh':
-            return $base . ($badgeText == 'Cao' ? 'bg-red-100 text-red-800' : 'bg-purple-100 text-purple-800');
-        case 'tratTuXaHoi':
-            return $base . 'bg-orange-100 text-orange-800';
-        case 'quanLyDanCu':
-            return $base . 'bg-indigo-100 text-indigo-800';
-        case 'tuanTraGiamSat':
-            return $base . ($badgeText == 'Offline' ? 'bg-gray-200 text-gray-800' : 'bg-blue-100 text-blue-800');
-        case 'vuViec':
-            return $base . 'bg-blue-100 text-blue-800';
-        case 'pccc':
-            return $base . (str_contains((string)$badgeText, 'Cao') ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800');
-        default:
-            return $base . 'bg-gray-100 text-gray-800';
-    }
-}
 ?>
 
 <!-- Include CSS & JS for libraries -->
@@ -63,6 +40,8 @@ function get_badge_class($layerName, $badgeText) {
         border-radius: 0.75rem; /* rounded-xl */
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
         border: 1px solid #e2e8f0; /* slate-200 */
+        display: flex;
+        flex-direction: column;
     }
     .card-title {
         font-size: 1.125rem; /* text-lg */
@@ -72,6 +51,9 @@ function get_badge_class($layerName, $badgeText) {
         border-bottom: 1px solid #e2e8f0; /* slate-200 */
         display: flex;
         align-items: center;
+        text-transform: uppercase;
+        color: #64748b;
+        font-size: 0.875rem;
     }
     .card-title i {
         width: 1.25rem;
@@ -79,105 +61,16 @@ function get_badge_class($layerName, $badgeText) {
         margin-right: 0.75rem;
     }
     .card-content {
-        padding: 1rem 1.5rem;
+        padding: 1.5rem;
+        flex-grow: 1;
     }
-    .kpi-card {
-        display: flex;
-        align-items: center;
-        padding: 1.25rem; /* p-5 */
-    }
-    .kpi-icon {
-        padding: 0.875rem; /* p-3.5 */
-        border-radius: 9999px; /* rounded-full */
-        margin-right: 1.25rem; /* mr-5 */
-    }
-    .kpi-icon i {
-        width: 1.75rem; /* w-7 */
-        height: 1.75rem; /* h-7 */
-    }
-    .kpi-value {
-        font-size: 2rem; /* text-3xl */
-        font-weight: 700; /* font-bold */
-        color: #1e293b; /* slate-800 */
-    }
-    .kpi-label {
-        font-size: 0.875rem; /* text-sm */
-        color: #64748b; /* slate-500 */
-    }
-    .list-item {
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #e2e8f0; /* slate-200 */
-    }
-    .list-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .list-item:first-child { padding-top: 0; }
-    
-    .badge {
-        display: inline-block;
-        font-size: 0.75rem; /* text-xs */
-        font-weight: 500; /* font-medium */
-        padding: 0.25rem 0.75rem;
-        border-radius: 9999px;
-    }
-    .layer-card-title {
-        font-size: 1rem; /* text-base */
-        font-weight: 600;
-        color: #334155; /* slate-700 */
-        display: flex;
-        align-items: center;
+    .section-title {
+        font-size: 1.25rem;
+        font-style: italic;
+        font-weight: bold;
+        color: #000;
+        margin-top: 2rem;
         margin-bottom: 1rem;
-    }
-    .layer-card-title i {
-        width: 1.125rem; /* w-4.5 */
-        height: 1.125rem; /* h-4.5 */
-        margin-right: 0.5rem;
-    }
-    .layer-kpi-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-        margin-bottom: 1rem;
-    }
-    .layer-kpi-item {
-        display: flex;
-        align-items: baseline;
-    }
-    .layer-kpi-value {
-        font-size: 1.25rem; /* text-xl */
-        font-weight: 600;
-        color: #1e293b; /* slate-800 */
-        margin-right: 0.25rem;
-    }
-    .layer-kpi-label {
-        font-size: 0.875rem; /* text-sm */
-        color: #64748b; /* slate-500 */
-    }
-    .layer-sublist-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-top: 1px solid #f1f5f9; /* slate-100 */
-    }
-    .layer-sublist-item:first-child { border-top: none; padding-top: 0; }
-    .kpi-clickable {
-        cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        align-items: center;
-    }
-    .kpi-clickable:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .layer-kpi-link {
-        text-decoration: none;
-        color: inherit;
-    }
-    .layer-kpi-link:hover .layer-kpi-value {
-        text-decoration: underline;
-        color: #2563eb;
     }
     .doughnut-wrapper {
         position: relative;
@@ -196,15 +89,22 @@ function get_badge_class($layerName, $badgeText) {
         transform: translate(-50%, -50%);
     }
     .doughnut-center-value {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: 700;
         color: #1e293b;
         line-height: 1;
     }
     .doughnut-center-label {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: #64748b;
         margin-top: 4px;
+    }
+    
+    /* Responsive Chart heights */
+    .main-chart-container { height: 400px; }
+    @media (max-width: 1024px) {
+        .main-chart-container { height: 300px; }
+        .doughnut-center-value { font-size: 2rem; }
     }
 </style>
 
@@ -213,321 +113,45 @@ function get_badge_class($layerName, $badgeText) {
     <!-- === Header === -->
     <div class="flex flex-wrap justify-between items-center gap-4 mb-2">
         <div>
-            <h1 class="text-3xl font-bold text-slate-800"><?= Html::encode($this->title) ?></h1>
-            <p class="text-slate-500 mt-1">Bảng điều hành nghiệp vụ ANTT Phường Kim Liên</p>
+            <h1 class="text-3xl font-bold text-slate-800 uppercase"><?= Html::encode($this->title) ?></h1>
+             <p class="text-slate-500 mt-1">TỔNG HỢP THÔNG TIN TRẬT TỰ ĐÔ THỊ PHƯỜNG KIM LIÊN TRONG TUẦN</p>
         </div>
         <div class="flex gap-3 items-center">
-            <!-- Đã gỡ bỏ ô "Địa bàn" -->
             <!-- Nút bấm chuyển sang bản đồ -->
-            <a href="<?= Html::encode($mapUrl) ?>" target="_blank" class="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">
+            <a href="<?= Html::encode($mapUrl) ?>" target="_blank" class="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-sm transition-colors">
                 <i data-lucide="map" class="w-4 h-4 mr-2"></i>
                 Chuyển Tới Bản Đồ
             </a>
         </div>
     </div>
 
-    <!-- === Hàng 1: KPIs Tác Nghiệp Chính === -->
-    <?php
-        // ID trạng thái "Đã giải quyết" - dùng cho filter quá hạn (logic đặc biệt: trang_thai_hien_tai_id=4 → quá hạn)
-        $trangThaiDaGiaiQuyetObj = \app\modules\quanly\models\TrangThaiXuLy::findOne(['ten_trang_thai' => 'Đã giải quyết', 'status' => 1]);
-        $idDaGiaiQuyetFilter = $trangThaiDaGiaiQuyetObj ? $trangThaiDaGiaiQuyetObj->id : 4;
-    ?>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
+    <!-- === TỔNG QUAN TẤT CẢ CÁC LỚP === -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <a href="<?= Url::to(['/quanly/vu-viec/index',
-            'VuViecSearch[ngay_tiep_nhan]' => date('Y-m-d'),
-        ]) ?>" class="card kpi-card kpi-clickable">
-            <div class="kpi-icon bg-blue-100 text-blue-600"><i data-lucide="alert-circle"></i></div>
-            <div>
-                <div class="kpi-value"><?= $kpis['vuViecHomNay'] ?></div>
-                <div class="kpi-label">Vụ việc mới trong ngày</div>
+        <!-- Biểu đồ cột tổng hợp 5 lớp -->
+        <div class="card lg:col-span-2">
+            <h2 class="card-title justify-center text-center">TỔNG HỢP THÔNG TIN TRẬT TỰ ĐÔ THỊ PHƯỜNG KIM LIÊN 2026</h2>
+            <div class="card-content main-chart-container w-full">
+                <canvas id="mainBarChart"></canvas>
             </div>
-        </a>
-
-        
-        <a href="<?= Url::to(['/quanly/vu-viec/index',
-            'VuViecSearch[muc_do_canh_bao]' => 'Đỏ',
-        ]) ?>" class="card kpi-card kpi-clickable">
-            <div class="kpi-icon bg-red-100 text-red-600"><i data-lucide="shield-alert"></i></div>
-            <div>
-                <div class="kpi-value"><?= $kpis['canhBaoDoHoatDong'] ?></div>
-                <div class="kpi-label">Cảnh báo Đỏ đang hoạt động</div>
+            <!-- Custom Legend -->
+            <div class="flex justify-center items-center gap-6 pb-4">
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-red-600 inline-block"></span> Đỏ</div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-yellow-400 inline-block"></span> Vàng</div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-green-500 inline-block"></span> Xanh</div>
             </div>
-        </a>
+        </div>
 
-        
-        <a href="<?= Url::to(['/quanly/vu-viec/index',
-            'VuViecSearch[trang_thai_hien_tai_id]' => $idDaGiaiQuyetFilter,
-        ]) ?>" class="card kpi-card kpi-clickable">
-            <div class="kpi-icon bg-yellow-100 text-yellow-600"><i data-lucide="calendar-clock"></i></div>
-            <div>
-                <div class="kpi-value"><?= $kpis['sapDenHan'] ?></div>
-                <div class="kpi-label">Vụ việc sắp đến hạn (3 ngày)</div>
-            </div>
-        </a>
-
-        
-        <a href="<?= Url::to(['/quanly/nguoi-dan/index',
-            'NguoiDanSearch[nhom_doi_tuong]' => 'Tiền án',
-        ]) ?>" class="card kpi-card kpi-clickable">
-            <div class="kpi-icon bg-indigo-100 text-indigo-600"><i data-lucide="users"></i></div>
-            <div>
-                <div class="kpi-value"><?= $kpis['doiTuongQuanTam'] ?></div>
-                <div class="kpi-label">Đối tượng cần quan tâm</div>
-            </div>
-        </a>
-    </div>
-
-    <!-- === Hàng 2: Trung tâm Tác nghiệp (Cảnh báo & Quá hạn) === -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Vụ việc Cảnh báo Đỏ -->
+        <!-- Tình Trạng Xử Lý Tất Cả Vụ Việc -->
         <div class="card">
-            <h2 class="card-title text-red-600">
-                <i data-lucide="alert-triangle"></i>
-                Trung tâm Cảnh báo Đỏ
+            <h2 class="card-title text-green-600">
+                <i data-lucide="pie-chart" class="text-green-500"></i>Tình Trạng Xử Lý Vụ Việc
             </h2>
-            <div class="card-content pt-0">
-                <?php if (empty($topCanhBaoDo)): ?>
-                    <p class="text-center text-slate-500 py-4">Không có cảnh báo đỏ nào đang hoạt động.</p>
-                <?php else: foreach ($topCanhBaoDo as $vuviec): ?>
-                    <div class="list-item">
-                        <p class="font-semibold text-slate-700 truncate"><?= Html::encode($vuviec->tom_tat_noi_dung) ?></p>
-                        <div class="flex justify-between text-sm mt-1">
-                            <span class="text-slate-500">Lĩnh vực: <span class="font-medium text-slate-600"><?= Html::encode($vuviec->linhVuc->ten_linh_vuc ?? 'N/A') ?></span></span>
-                            <span class="text-slate-500">Người báo: <span class="font-medium text-slate-600"><?= Html::encode($vuviec->nguoiDan->ho_ten ?? 'N/A') ?></span></span>
-                        </div>
-                    </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-        
-        <!-- Vụ việc Quá hạn Xử lý -->
-        <div class="card">
-            <h2 class="card-title text-yellow-600">
-                <i data-lucide="timer-off"></i>
-                Vụ việc Quá hạn Xử lý
-            </h2>
-             <div class="card-content pt-0">
-                <?php if (empty($topQuaHan)): ?>
-                    <p class="text-center text-slate-500 py-4">Không có vụ việc nào quá hạn.</p>
-                <?php else: foreach ($topQuaHan as $vuviec): ?>
-                    <div class="list-item">
-                        <p class="font-semibold text-slate-700 truncate"><?= Html::encode($vuviec->tom_tat_noi_dung) ?></p>
-                        <div class="flex justify-between text-sm mt-1">
-                            <span class="text-slate-500">Hạn xử lý: <span class="font-medium text-red-600"><?= !empty($vuviec->han_xu_ly)
-    ? date('d/m/Y', strtotime(str_replace('/', '-', $vuviec->han_xu_ly)))
-    : '' ?>
-</span></span>
-                            <span class="text-slate-500">Cán bộ: <span class="font-medium text-slate-600"><?= Html::encode($vuviec->canBoTiepNhan->ho_ten ?? 'N/A') ?></span></span>
-                        </div>
-                    </div>
-                <?php endforeach; endif; ?>
-            </div>
-        </div>
-    </div>
-
-    <!-- === Hàng 3: 6 Lớp Chuyên Đề Nghiệp Vụ === -->
-    <?php
-    // Map các layer -> URL danh sách tương ứng
-    $layerUrls = [
-        'vuViec' => [
-            'Vụ việc đang xử lý' => Url::to(['/quanly/vu-viec/index', 'VuViecSearch[da_giai_quyet]' => '0']),
-            'Điểm nhạy cảm'      => Url::to(['/quanly/diem-nhay-cam/index']),
-        ],
-        'anNinh' => [
-            'Mục tiêu trọng điểm' => Url::to(['/quanly/muctieu-trongdiem/index']),
-            'Khu vực phức tạp'    => Url::to(['/quanly/khuvuc-phuctap-an-ninh/index']),
-        ],
-        'tratTuXaHoi' => [
-            'Điểm tệ nạn'      => Url::to(['/quanly/diem-tenannxh/index']),
-            'Cơ sở KD có ĐK'   => Url::to(['/quanly/cosokinhdoanh-codk/index']),
-        ],
-        'quanLyDanCu' => [
-            'Tổng nhân khẩu'       => Url::to(['/quanly/nguoi-dan/index']),
-            'Đối tượng quan tâm'   => Url::to(['/quanly/nguoi-dan/index', 'NguoiDanSearch[nhom_doi_tuong_khac]' => '1']),
-        ],
-        'tuanTraGiamSat' => [
-            'Camera An ninh'  => Url::to(['/quanly/camera-an-ninh/index']),
-            'Chốt tuần tra'   => Url::to(['/quanly/chot-tuantre/index']),
-        ],
-        'pccc' => [
-            'Cơ sở nguy cơ cháy' => Url::to(['/quanly/cosonguyco-chayno/index']),
-            'Nguồn nước CCC'      => Url::to(['/quanly/nguon-nuoc-ccc/index']),
-            'Trụ nước CCC'        => Url::to(['/quanly/tru-nuoc-ccc/index']),
-        ],
-    ];
-    ?>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        
-        <!-- Lớp Vụ Việc -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-blue-600"><i data-lucide="alert-circle"></i>Lớp Vụ Việc</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['vuViec']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['vuViec'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['vuViec']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->tom_tat_noi_dung) ?></span>
-                        <span class="<?= get_badge_class('vuViec', $item->linhVuc->ten_linh_vuc ?? '') ?> truncate"><?= Html::encode($item->linhVuc->ten_linh_vuc ?? 'N/A') ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lớp An Ninh -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-purple-600"><i data-lucide="shield"></i>Lớp An Ninh</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['anNinh']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['anNinh'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['anNinh']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->ten) ?></span>
-                        <span class="<?= get_badge_class('anNinh', $item->muc_do_phuctap) ?> truncate"><?= Html::encode($item->muc_do_phuctap) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lớp Trật Tự Xã Hội -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-orange-600"><i data-lucide="store"></i>Lớp Trật Tự Xã Hội</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['tratTuXaHoi']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['tratTuXaHoi'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['tratTuXaHoi']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->ten_co_so) ?></span>
-                        <span class="<?= get_badge_class('tratTuXaHoi', $item->loai_hinh_kinh_doanh) ?> truncate"><?= Html::encode($item->loai_hinh_kinh_doanh) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Lớp Quản Lý Dân Cư -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-indigo-600"><i data-lucide="users"></i>Lớp Quản Lý Dân Cư</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['quanLyDanCu']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['quanLyDanCu'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['quanLyDanCu']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->ho_ten) ?></span>
-                        <span class="<?= get_badge_class('quanLyDanCu', $item->nhom_doi_tuong) ?> truncate"><?= Html::encode($item->nhom_doi_tuong) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Lớp Tuần Tra - Giám Sát -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-cyan-600"><i data-lucide="video"></i>Lớp Tuần Tra - Giám Sát</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['tuanTraGiamSat']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['tuanTraGiamSat'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['tuanTraGiamSat']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->ten_diem) ?></span>
-                        <span class="<?= get_badge_class('tuanTraGiamSat', $item->trang_thai) ?> truncate"><?= Html::encode($item->trang_thai) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Lớp PCCC -->
-        <div class="card">
-            <div class="card-content">
-                <h3 class="layer-card-title text-red-600"><i data-lucide="flame"></i>Lớp PCCC</h3>
-                <div class="layer-kpi-list">
-                    <?php foreach ($layerData['pccc']['counts'] as $label => $value): ?>
-                    <div class="layer-kpi-item">
-                        <a href="<?= $layerUrls['pccc'][$label] ?? '#' ?>" class="layer-kpi-link" style="display:flex;align-items:baseline;gap:4px">
-                            <span class="layer-kpi-value"><?= $value ?></span>
-                            <span class="layer-kpi-label"><?= $label ?></span>
-                        </a>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-                <div class="space-y-2">
-                    <?php foreach ($layerData['pccc']['list'] as $item): ?>
-                    <div class="layer-sublist-item">
-                        <span class="text-sm text-slate-600 truncate pr-2"><?= Html::encode($item->ten_co_so) ?></span>
-                        <span class="<?= get_badge_class('pccc', $item->muc_do_nguy_co) ?> truncate"><?= Html::encode($item->muc_do_nguy_co) ?></span>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- === Hàng 4: Biểu đồ Phân Tích === -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Xu Hướng Vụ Việc -->
-        <div class="card">
-            <h2 class="card-title"><i data-lucide="line-chart" class="text-blue-500"></i>Xu Hướng Vụ Việc (30 Ngày Qua)</h2>
-            <div class="card-content h-72"><canvas id="trendChart"></canvas></div>
-        </div>
-
-        <!-- Tình Trạng Xử Lý -->
-        <div class="card">
-            <h2 class="card-title"><i data-lucide="pie-chart" class="text-green-500"></i>Tình Trạng Xử Lý Vụ Việc</h2>
-            <div class="card-content h-72">
+            <div class="card-content main-chart-container w-full">
                 <div class="doughnut-wrapper">
-                    <canvas id="statusChart"></canvas>
-                    <div class="doughnut-center" id="doughnutCenter">
-                        <div class="doughnut-center-value" id="doughnutTotal">-</div>
+                    <canvas id="mainStatusChart"></canvas>
+                    <div class="doughnut-center" id="mainDoughnutCenter">
+                        <div class="doughnut-center-value" id="mainDoughnutTotal">-</div>
                         <div class="doughnut-center-label">Tổng vụ việc</div>
                     </div>
                 </div>
@@ -535,101 +159,221 @@ function get_badge_class($layerName, $badgeText) {
         </div>
     </div>
 
+    <!-- === TỔNG QUAN CHI TIẾT TỪNG LỚP CHUYÊN ĐỀ === -->
+    <?php
+    // keys trùng khớp với mảng PHP
+    $layers = ['unTacGiaoThong', 'veSinhMoiTruong', 'tratTuDoThi', 'ngapUng', 'tapKetRac']; 
+    ?>
+    
+    <?php foreach ($layers as $index => $layerKey): ?>
+        <?php $layer = $layerData[$layerKey]; ?>
+        <h3 class="section-title">Tổng quan / <?= Html::encode($layer['title']) ?></h3>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Biểu đồ cột Từng Lớp -->
+            <div class="card lg:col-span-2">
+                <h2 class="card-title justify-center text-center uppercase">TỔNG HỢP</h2>
+                <div class="card-content" style="height: 350px;">
+                    <canvas id="barChart_<?= $layerKey ?>"></canvas>
+                </div>
+                <div class="flex justify-center items-center gap-6 pb-4">
+                     <p class="font-semibold text-gray-700"><?= Html::encode($layer['title']) ?></p>
+                </div>
+            </div>
+
+            <!-- Tình Trạng Xử Lý Của Lớp Đó -->
+            <div class="card">
+                <h2 class="card-title text-green-600">
+                    <i data-lucide="pie-chart" class="text-green-500"></i>Tình Trạng Xử Lý Vụ Việc
+                </h2>
+                <div class="card-content" style="height: 350px;">
+                    <div class="doughnut-wrapper">
+                        <canvas id="statusChart_<?= $layerKey ?>"></canvas>
+                        <div class="doughnut-center">
+                            <div class="doughnut-center-value total-val-<?= $layerKey ?>">-</div>
+                            <div class="doughnut-center-label">Tổng vụ việc</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    <?php endforeach; ?>
+
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     lucide.createIcons();
 
-    const chartConfig = {
+    // Data payload
+    const chartData = <?= $chartDataJson ?>;
+    const statusData = <?= $statusChartDataJson ?>;
+    const layerData = <?= $layerDataJson ?>;
+
+    // Common configurations
+    const colorRed = '#dc2626'; // tailwind red-600
+    const colorYellow = '#facc15'; // tailwind yellow-400
+    const colorGreen = '#22c55e'; // tailwind green-500
+    
+    const chartColors = ['#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#06b6d4', '#f97316', '#14b8a6', '#6366f1'];
+    
+    const commonBarConfig = {
         plugins: { 
-            legend: { labels: { color: '#475569', font: { family: 'inherit' } }, position: 'bottom' } 
+            legend: { display: false },
+            datalabels: {
+                anchor: 'end',
+                align: 'top',
+                color: '#475569',
+                font: { weight: 'bold' }
+            }
         },
         scales: {
-            y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#64748b' } },
-            x: { grid: { display: false }, ticks: { color: '#64748b' } }
+            y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { color: '#64748b', stepSize: 1 } },
+            x: { grid: { display: false }, ticks: { color: '#475569', font: { weight: '600' } } }
         },
         maintainAspectRatio: false,
         responsive: true
     };
-    const chartColors = ['#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#06b6d4', '#f97316', '#14b8a6', '#6366f1'];
 
-    // 1. Trend Chart (Line)
-    const trendCtx = document.getElementById('trendChart')?.getContext('2d');
-    if (trendCtx) {
-        const trendData = <?= $trendChartDataJson ?>;
-        const gradient = trendCtx.createLinearGradient(0, 0, 0, 300);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
-        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
-        new Chart(trendCtx, {
-            type: 'line',
+    const commonDoughnutConfig = (total, idPrefix) => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { 
+            legend: { display: true, position: 'bottom', labels: { boxWidth: 12, usePointStyle: false, padding: 20 } },
+        }, 
+        cutout: '65%',
+        onHover: function(evt, elements) {
+            const totalEl = document.querySelector(`.total-val-${idPrefix}`);
+            if (!totalEl) return;
+            if (elements.length > 0) {
+                const idx = elements[0].index;
+                const val = statusData.data[idx];
+                totalEl.textContent = val.toLocaleString('vi-VN');
+            } else {
+                totalEl.textContent = total.toLocaleString('vi-VN');
+            }
+        }
+    });
+
+    // Load Chart.js DataLabels plugin if it's available, otherwise fallback
+    // We will use a custom plugin if chartjs-plugin-datalabels is missing
+    const showValuesPlugin = {
+        id: 'showValues',
+        afterDatasetsDraw(chart, args, pluginOptions) {
+            const { ctx, data } = chart;
+            ctx.save();
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillStyle = '#475569';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+            
+            if(chart.config.type !== 'bar') return;
+            
+            data.datasets.forEach((dataset, i) => {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach((bar, index) => {
+                    const value = dataset.data[index];
+                    if (value > 0) {
+                        ctx.fillText(value, bar.x, bar.y - 5);
+                    }
+                });
+            });
+            ctx.restore();
+        }
+    };
+
+
+    // 1. MAIN BAR CHART
+    const mainBarCtx = document.getElementById('mainBarChart')?.getContext('2d');
+    if (mainBarCtx) {
+        new Chart(mainBarCtx, {
+            type: 'bar',
             data: {
-                labels: trendData.labels,
-                datasets: [{
-                    label: 'Vụ việc mới',
-                    data: trendData.data,
-                    borderColor: '#2563eb',
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#2563eb',
-                }]
+                labels: chartData.labels,
+                datasets: [
+                    { label: 'Đỏ', backgroundColor: colorRed, data: chartData.do, barPercentage: 0.8, categoryPercentage: 0.7 },
+                    { label: 'Vàng', backgroundColor: colorYellow, data: chartData.vang, barPercentage: 0.8, categoryPercentage: 0.7 },
+                    { label: 'Xanh', backgroundColor: colorGreen, data: chartData.xanh, barPercentage: 0.8, categoryPercentage: 0.7 },
+                ]
             },
-            options: { ...chartConfig, plugins: { legend: { display: false } } }
+            options: commonBarConfig,
+            plugins: [showValuesPlugin]
         });
     }
-    
-    // 2. Status Chart (Doughnut) với center text
-    const statusCtx = document.getElementById('statusChart')?.getContext('2d');
-    if (statusCtx) {
-        const statusData = <?= $statusChartDataJson ?>;
-        const total = statusData.data.reduce((a, b) => a + b, 0);
-        const totalEl = document.getElementById('doughnutTotal');
-        if (totalEl) totalEl.textContent = total.toLocaleString('vi-VN');
 
-        const statusChart = new Chart(statusCtx, {
+    // 2. MAIN DOUGHNUT CHART
+    const mainStatusCtx = document.getElementById('mainStatusChart')?.getContext('2d');
+    if (mainStatusCtx) {
+        const total = statusData.data.reduce((a, b) => a + b, 0);
+        document.getElementById('mainDoughnutTotal').textContent = total.toLocaleString('vi-VN');
+        // Custom onHover for main
+        const doughnutOpts = commonDoughnutConfig(total, 'main');
+        doughnutOpts.onHover = function(evt, elements) {
+            const totalEl = document.getElementById('mainDoughnutTotal');
+            if (!totalEl) return;
+            if (elements.length > 0) {
+                const idx = elements[0].index;
+                const val = statusData.data[idx];
+                totalEl.textContent = val.toLocaleString('vi-VN');
+            } else {
+                totalEl.textContent = total.toLocaleString('vi-VN');
+            }
+        };
+
+        new Chart(mainStatusCtx, {
             type: 'doughnut',
             data: {
                 labels: statusData.labels,
-                datasets: [{
-                    data: statusData.data,
-                    backgroundColor: chartColors,
-                    borderColor: '#ffffff',
-                    borderWidth: 4,
-                    hoverOffset: 8
-                }]
+                datasets: [{ data: statusData.data, backgroundColor: chartColors, borderWidth: 3 }]
             },
-            options: { 
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { 
-                    legend: { position: 'bottom', labels: { color: '#475569', font: { family: 'inherit' } } },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                const pct = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
-                                return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                            }
-                        }
-                    }
-                }, 
-                cutout: '68%',
-                // Cập nhật center text khi hover
-                onHover: function(evt, elements) {
-                    if (!totalEl) return;
-                    if (elements.length > 0) {
-                        const idx = elements[0].index;
-                        const val = statusData.data[idx];
-                        const pct = total > 0 ? Math.round(val / total * 100) : 0;
-                        totalEl.textContent = val.toLocaleString('vi-VN');
-                        totalEl.nextElementSibling.textContent = statusData.labels[idx] + ' (' + pct + '%)';
-                    } else {
-                        totalEl.textContent = total.toLocaleString('vi-VN');
-                        totalEl.nextElementSibling.textContent = 'Tổng vụ việc';
-                    }
-                }
-            }
+            options: doughnutOpts
         });
     }
+
+    // 3. INDIVIDUAL THEMATIC CHARTS
+    const layers = ['unTacGiaoThong', 'veSinhMoiTruong', 'tratTuDoThi', 'ngapUng', 'tapKetRac'];
+    
+    layers.forEach(layerKey => {
+        const lyr = layerData[layerKey];
+        if(!lyr) return;
+
+        // Sub Bar Chart
+        const barCtx = document.getElementById(`barChart_${layerKey}`)?.getContext('2d');
+        if (barCtx) {
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: [''], // Trống Label trục X vì hiển thị ở dưới
+                    datasets: [
+                        { label: 'Đỏ', backgroundColor: colorRed, data: [lyr.chart.do], barThickness: 40 },
+                        { label: 'Vàng', backgroundColor: colorYellow, data: [lyr.chart.vang], barThickness: 40 },
+                        { label: 'Xanh', backgroundColor: colorGreen, data: [lyr.chart.xanh], barThickness: 40 },
+                    ]
+                },
+                options: commonBarConfig,
+                plugins: [showValuesPlugin]
+            });
+        }
+
+        // Sub Doughnut Chart
+        const donutCtx = document.getElementById(`statusChart_${layerKey}`)?.getContext('2d');
+        if (donutCtx) {
+            // Sử dụng chung 1 bộ data cho nhanh (vì chưa có filter real).
+            const subTotal = statusData.data.reduce((a, b) => a + b, 0);
+            const totalEl = document.querySelector(`.total-val-${layerKey}`);
+            if (totalEl) totalEl.textContent = subTotal.toLocaleString('vi-VN');
+            
+            new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusData.labels,
+                    datasets: [{ data: statusData.data, backgroundColor: chartColors, borderWidth: 3 }]
+                },
+                options: commonDoughnutConfig(subTotal, layerKey)
+            });
+        }
+    });
+
 });
 </script>

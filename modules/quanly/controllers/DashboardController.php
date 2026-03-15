@@ -29,191 +29,112 @@ use yii\helpers\ArrayHelper;
 class DashboardController extends QuanlyBaseController
 {
     /**
-     * Hiển thị Bảng điều hành ANTT thông minh.
+     * Hiển thị Bảng điều hành Quản lý đô thị.
      * @return string
      * @throws \yii\db\Exception
      */
     public function actionIndex()
     {
-        // --- Lấy ID trạng thái 'Đã giải quyết' ---
-        // Thêm status=1 cho TrangThaiXuLy
-        $trangThaiDaGiaiQuyet = TrangThaiXuLy::findOne(['ten_trang_thai' => 'Đã giải quyết', 'status' => 1]);
-        $idDaGiaiQuyet = $trangThaiDaGiaiQuyet ? $trangThaiDaGiaiQuyet->id : -1;
-
-        // === 1. KPI TÁC NGHIỆP CHÍNH (TOÀN HỆ THỐNG - 1 PHƯỜNG) ===
-        $kpis = [
-            'vuViecHomNay' => (int) VuViec::find()
-                ->where(['status' => 1]) // Thêm status
-                ->andWhere(['>=', 'created_at', new Expression('CURRENT_DATE')])
-                ->count(),
-            
-            'canhBaoDoHoatDong' => (int) VuViec::find()
-                ->where(['muc_do_canh_bao' => VuViec::CANH_BAO_DO, 'status' => 1]) // Thêm status
-                ->andWhere(['!=', 'trang_thai_hien_tai_id', $idDaGiaiQuyet])
-                ->count(),
-            
-            'sapDenHan' => (int) VuViec::find()
-                ->where(['status' => 1]) // Thêm status
-                ->andWhere(['!=', 'trang_thai_hien_tai_id', $idDaGiaiQuyet])
-                ->andWhere(['BETWEEN', 'han_xu_ly', new Expression('NOW()'), new Expression('NOW() + INTERVAL \'3 days\'')])
-                ->count(),
-            
-            'doiTuongQuanTam' => (int) NguoiDan::find()
-                ->where(['status' => 1]) // Thêm status
-                ->andWhere(['!=', 'nhom_doi_tuong', 'Thường'])
-                ->count(),
-        ];
-
-        // === 2. DANH SÁCH TÁC NGHIỆP (TRUNG TÂM CHỈ HUY) ===
-        $topCanhBaoDo = VuViec::find()
-            ->where(['muc_do_canh_bao' => VuViec::CANH_BAO_DO, 'status' => 1]) // Thêm status
-            ->andWhere(['!=', 'trang_thai_hien_tai_id', $idDaGiaiQuyet])
-            ->orderBy(['created_at' => SORT_DESC])
-            ->limit(5)->with('linhVuc', 'nguoiDan')
-            ->all();
-
-        $topQuaHan = VuViec::find()
-            ->where(['status' => 1]) // Thêm status
-            ->andWhere(['<', 'han_xu_ly', date('Y-m-d H:i:s')])
-            ->andWhere(['!=', 'trang_thai_hien_tai_id', $idDaGiaiQuyet])
-            ->orderBy(['han_xu_ly' => SORT_ASC])
-            ->limit(5)->with('trangThaiHienTai', 'canBoTiepNhan')
-            ->all();
-
-        // === 3. DỮ LIỆU 6 LỚP CHUYÊN ĐỀ ===
-        
-        $layerData = [
-            // Lớp An ninh
-            'anNinh' => [
-                'counts' => [
-                    'Mục tiêu trọng điểm' => (int) MuctieuTrongdiem::find()->where(['status' => 1])->count(),
-                    'Khu vực phức tạp' => (int) KhuvucPhuctapAnNinh::find()->where(['status' => 1])->count(),
-                ],
-                'list' => KhuvucPhuctapAnNinh::find()
-                    ->where(['status' => 1]) // Thêm status
-                    ->orderBy(['updated_at' => SORT_DESC])
-                    ->limit(3)->all(),
-                'list_key' => 'ten', // Thuộc tính để hiển thị tên
-                'list_badge' => 'muc_do_phuctap' // Thuộc tính để hiển thị badge
-            ],
-            
-            // Lớp Trật tự Xã hội
-            'tratTuXaHoi' => [
-                'counts' => [
-                    'Điểm tệ nạn' => (int) DiemTenannxh::find()->where(['status' => 1])->count(),
-                    'Cơ sở KD có ĐK' => (int) CosokinhdoanhCodk::find()->where(['status' => 1])->count(),
-                ],
-                'list' => CosokinhdoanhCodk::find()
-                    ->where(['status' => 1]) // Thêm status
-                    ->andWhere(['IN', 'loai_hinh_kinh_doanh', ['Karaoke', 'Bar', 'Khách sạn', 'Nhà nghỉ', 'Cầm đồ']])
-                    ->orderBy(['updated_at' => SORT_DESC])
-                    ->limit(3)->all(),
-                'list_key' => 'ten_co_so',
-                'list_badge' => 'loai_hinh_kinh_doanh'
-            ],
-
-            // Lớp Quản lý Dân cư
-            'quanLyDanCu' => [
-                'counts' => [
-                    'Tổng nhân khẩu' => (int) NguoiDan::find()->where(['status' => 1])->count(),
-                    'Đối tượng quan tâm' => $kpis['doiTuongQuanTam'], // Đã có status từ $kpis
-                ],
-                'list' => NguoiDan::find()
-                    ->where(['status' => 1]) // Thêm status
-                    ->andWhere(['!=', 'nhom_doi_tuong', 'Thường'])
-                    ->orderBy(['updated_at' => SORT_DESC])
-                    ->limit(3)->all(),
-                'list_key' => 'ho_ten',
-                'list_badge' => 'nhom_doi_tuong'
-            ],
-            
-            // Lớp Tuần tra - Giám sát
-            'tuanTraGiamSat' => [
-                'counts' => [
-                    'Camera An ninh' => (int) CameraAnNinh::find()->where(['status' => 1])->count(),
-                    'Chốt tuần tra' => (int) ChotTuantre::find()->where(['status' => 1])->count(),
-                ],
-                'list' => CameraAnNinh::find() // Lấy camera đang offline
-                    ->where(['trang_thai' => 'Offline', 'status' => 1]) // Thêm status
-                    ->orderBy(['updated_at' => SORT_DESC])
-                    ->limit(3)->all(),
-                'list_key' => 'ten_diem',
-                'list_badge' => 'trang_thai'
-            ],
-            
-            // Lớp Vụ việc
-            'vuViec' => [
-                'counts' => [
-                    'Vụ việc đang xử lý' => (int) VuViec::find()
-                        ->where(['status' => 1]) // Thêm status
-                        ->andWhere(['!=', 'trang_thai_hien_tai_id', $idDaGiaiQuyet])
-                        ->count(),
-                    'Điểm nhạy cảm' => (int) DiemNhayCam::find()->where(['status' => 1])->count(),
-                ],
-                'list' => VuViec::find() // Lấy vụ việc mới nhất
-                    ->where(['status' => 1]) // Thêm status
-                    ->orderBy(['created_at' => SORT_DESC])
-                    ->limit(3)->with('linhVuc')
-                    ->all(),
-                'list_key' => 'tom_tat_noi_dung',
-                'list_badge' => 'linhVuc.ten_linh_vuc'
-            ],
-
-            // Lớp PCCC
-            'pccc' => [
-                'counts' => [
-                    'Cơ sở nguy cơ cháy' => (int) CosonguycoChayno::find()->where(['status' => 1])->count(),
-                    'Nguồn nước CCC' => (int) NguonNuocCcc::find()->where(['status' => 1])->count(),
-                    'Trụ nước CCC' => (int) TruNuocCcc::find()->where(['status' => 1])->count(),
-                ],
-                'list' => CosonguycoChayno::find() // Lấy cơ sở nguy cơ cao
-                    ->where(['status' => 1]) // Thêm status
-                    ->andWhere(['IN', 'muc_do_nguy_co', ['Cao', 'Rất Cao']])
-                    ->orderBy(['updated_at' => SORT_DESC])
-                    ->limit(3)->all(),
-                'list_key' => 'ten_co_so',
-                'list_badge' => 'muc_do_nguy_co'
-            ],
-        ];
-
-        // === 4. DỮ LIỆU BIỂU ĐỒ ===
-        // Biểu đồ đường: Xu hướng vụ việc
-        $trendData = VuViec::find()
-            ->select(['ngay' => new Expression('DATE(created_at)'), 'count' => 'COUNT(*)'])
-            ->where(['status' => 1]) // Thêm status
-            ->andWhere(['>=', 'created_at', new Expression('NOW() - INTERVAL \'30 days\'')])
-            ->groupBy(['ngay'])->orderBy('ngay ASC')
-            ->asArray()->all();
-        $trendChartLabels = [];
-        $trendChartValues = [];
-        $trendDataMap = ArrayHelper::map($trendData, 'ngay', 'count');
-        for ($i = 29; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days"));
-            $trendChartLabels[] = date('d/m', strtotime($date));
-            $trendChartValues[] = isset($trendDataMap[$date]) ? (int)$trendDataMap[$date] : 0;
-        }
-        $trendChartData = ['labels' => $trendChartLabels, 'data' => $trendChartValues];
-
-        // Biểu đồ tròn: Trạng thái xử lý
-        $dataByStatus = VuViec::find()
+        // --- 1. TÌNH TRẠNG XỬ LÝ VỤ VIỆC (BIỂU ĐỒ TRÒN BÊN PHẢI) ---
+        $dataByStatus = \app\modules\quanly\models\VuViec::find()
             ->select(['trang_thai_hien_tai_id', 'count' => 'COUNT(*)'])
-            ->where(['status' => 1]) // Thêm status
+            ->where(['status' => 1])
             ->groupBy('trang_thai_hien_tai_id')->with('trangThaiHienTai')
             ->asArray()->all();
+        
         $statusChartData = [
             'labels' => ArrayHelper::getColumn($dataByStatus, fn($item) => $item['trangThaiHienTai']['ten_trang_thai'] ?? 'N/A'),
             'data' => array_map('intval', ArrayHelper::getColumn($dataByStatus, 'count')),
         ];
 
+        // --- 2. DỮ LIỆU ĐÁNH GIÁ (ĐỎ, VÀNG, XANH) CHO BIỂU ĐỒ CỘT CHÍNH ---
+        // Helper function để lấy số lượng theo cột đánh giá linh hoạt
+        $getCountByAttr = function ($modelClass, $searchKeyword, $attribute = 'danh_gia') {
+            return (int) $modelClass::find()
+                ->where(['status' => 1])
+                ->andWhere(['ilike', $attribute, $searchKeyword])
+                ->count();
+        };
+
+        $chartData = [
+            'labels' => ['Tắc nghẽn giao thông', 'Vệ sinh môi trường', 'Trật tự đô thị', 'Ngập úng', 'Tập kết rác'],
+            'do' => [
+                $getCountByAttr('app\modules\quanly\models\UnTacGiaoThong', '%đỏ%'),
+                $getCountByAttr('app\modules\quanly\models\DiemDenVsmt', '%đỏ%'),
+                $getCountByAttr('app\modules\quanly\models\TratTuDoThi', '%đỏ%', 'ghi_chu'), // Trật tự đô thị dùng cột ghi_chu
+                $getCountByAttr('app\modules\quanly\models\NgapUng', '%đỏ%'),
+                0,
+            ],
+            'vang' => [
+                $getCountByAttr('app\modules\quanly\models\UnTacGiaoThong', '%vàng%'),
+                $getCountByAttr('app\modules\quanly\models\DiemDenVsmt', '%vàng%'),
+                $getCountByAttr('app\modules\quanly\models\TratTuDoThi', '%vàng%', 'ghi_chu'), // Trật tự đô thị dùng cột ghi_chu
+                $getCountByAttr('app\modules\quanly\models\NgapUng', '%vàng%'),
+                0,
+            ],
+            'xanh' => [
+                $getCountByAttr('app\modules\quanly\models\UnTacGiaoThong', '%xanh%'),
+                $getCountByAttr('app\modules\quanly\models\DiemDenVsmt', '%xanh%'),
+                $getCountByAttr('app\modules\quanly\models\TratTuDoThi', '%xanh%', 'ghi_chu'), // Trật tự đô thị dùng cột ghi_chu
+                $getCountByAttr('app\modules\quanly\models\NgapUng', '%xanh%'),
+                (int) \app\modules\quanly\models\TapKetRac::find()->where(['status' => 1])->count(), // Tập kết rác gán vào Xanh (Hạ tầng)
+            ],
+        ];
+
+        // --- 3. DỮ LIỆU CÁC LỚP CHUYÊN ĐỀ (PHẦN BÊN DƯỚI) ---
+        $layerData = [
+            'unTacGiaoThong' => [
+                'title' => 'Tắc nghẽn giao thông',
+                'chart' => [
+                    'do' => $chartData['do'][0],
+                    'vang' => $chartData['vang'][0],
+                    'xanh' => $chartData['xanh'][0],
+                ],
+                'statusChart' => $statusChartData, // Giả sử biểu đồ tròn là tổng thể (do thiếu dữ liệu filter)
+            ],
+            'veSinhMoiTruong' => [
+                'title' => 'Vệ sinh môi trường (Điểm đen VSMT)',
+                'chart' => [
+                    'do' => $chartData['do'][1],
+                    'vang' => $chartData['vang'][1],
+                    'xanh' => $chartData['xanh'][1],
+                ],
+                'statusChart' => $statusChartData,
+            ],
+            'tratTuDoThi' => [
+                'title' => 'Trật tự đô thị',
+                'chart' => [
+                    'do' => $chartData['do'][2],
+                    'vang' => $chartData['vang'][2],
+                    'xanh' => $chartData['xanh'][2],
+                ],
+                'statusChart' => $statusChartData,
+            ],
+            'ngapUng' => [
+                'title' => 'Ngập úng',
+                'chart' => [
+                    'do' => $chartData['do'][3],
+                    'vang' => $chartData['vang'][3],
+                    'xanh' => $chartData['xanh'][3],
+                ],
+                'statusChart' => $statusChartData,
+            ],
+            'tapKetRac' => [
+                'title' => 'Điểm tập kết rác',
+                'chart' => [
+                    'do' => $chartData['do'][4],
+                    'vang' => $chartData['vang'][4],
+                    'xanh' => $chartData['xanh'][4],
+                ],
+                'statusChart' => $statusChartData,
+            ],
+        ];
+
         // === RENDER VIEW ===
         return $this->render('index', [
-            // 'tenPhuongXa' => $tenPhuongXa, // Đã bỏ
-            'kpis' => $kpis,
-            'topCanhBaoDo' => $topCanhBaoDo,
-            'topQuaHan' => $topQuaHan,
-            'layerData' => $layerData,
-            'trendChartData' => $trendChartData,
             'statusChartData' => $statusChartData,
+            'chartData' => $chartData,
+            'layerData' => $layerData,
         ]);
     }
 }
