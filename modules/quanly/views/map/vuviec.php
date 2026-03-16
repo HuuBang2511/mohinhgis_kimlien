@@ -485,11 +485,17 @@ document.addEventListener('DOMContentLoaded', function () {
         WMS_URL: 'https://hpngis.online/geoserver/mohinhgis_kimlien/wms',
         GEOJSON_VUVEC_URL: 'https://hpngis.online/geoserver/mohinhgis_kimlien/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=mohinhgis_kimlien%3Avu_viec&maxFeatures=5000&outputFormat=application%2Fjson',
         DETAIL_URLS: {
-            vuViec: '<?= $vuViecDetailUrlBase ?>',
-            nocGia: '<?= $nocGiaDetailUrlBase ?>',
-            phuongXa: '<?= $phuongXaDetailUrlBase ?>',
-            khuPho: '<?= $khuPhoDetailUrlBase ?>',
+            vuViec:          '<?= $vuViecDetailUrlBase ?>',
+            nocGia:          '<?= $nocGiaDetailUrlBase ?>',
+            phuongXa:        '<?= $phuongXaDetailUrlBase ?>',
+            khuPho:          '<?= $khuPhoDetailUrlBase ?>',
+            ngapUng:         '<?= $ngapUngDetailUrlBase ?>',
+            tapKetRac:       '<?= $tapKetRacDetailUrlBase ?>',
+            tratTuDoThi:     '<?= $tratTuDoThiDetailUrlBase ?>',
+            unTacGiaoThong:  '<?= $unTacGiaoThongDetailUrlBase ?>',
+            diemDenVsmt:     '<?= $diemDenVsmtDetailUrlBase ?>',
         },
+        FILES_API_URL: '<?= Yii::$app->urlManager->createUrl(["/quanly/map/get-files"]) ?>',
         MAP_CENTER: [21.007144, 105.834918],
         MAP_ZOOM: 16,
         
@@ -720,10 +726,10 @@ document.addEventListener('DOMContentLoaded', function () {
             displayFeatureInfo(feature, config) {
                 const props = feature.properties;
                 let content = `<div class='popup-content'><h4>${config.displayName}</h4><table>`;
-                
+
                 let fields = config.popupFields || {};
                 if (config.type === 'cluster') {
-                    fields = {'ma_vu_viec': 'Mã vụ việc', 'tom_tat_noi_dung' : 'Tóm tắt nội dung', 'dia_chi_su_viec': 'Địa chỉ'};
+                    fields = {'ma_vu_viec': 'Mã vụ việc', 'tom_tat_noi_dung': 'Tóm tắt nội dung', 'dia_chi_su_viec': 'Địa chỉ'};
                 }
 
                 for (const key in fields) {
@@ -731,47 +737,111 @@ document.addEventListener('DOMContentLoaded', function () {
                         content += `<tr><th>${fields[key]}</th><td>${props[key] || 'Không có'}</td></tr>`;
                     }
                 }
-                content += "</table>";
+                content += `</table>`;
 
-                let detailUrl = '';
-                const featureId = feature.id; 
-                const numericId = featureId ? featureId.split('.').pop() : null;
+                // --- Map layer ID → detail URL key + files API layer key ---
+                const layerDetailMap = {
+                    'wmsVuviecLayer':          { urlKey: 'vuViec',         filesKey: null },
+                    'clusterVuviecLayer':      { urlKey: 'vuViec',         filesKey: null },
+                    'wmsNocgiaLayer':          { urlKey: 'nocGia',         filesKey: null },
+                    'wmsDiemnhaycamLayer':     { urlKey: null,             filesKey: null },
+                    'wmsPhuongXaLayer':        { urlKey: 'phuongXa',       filesKey: null },
+                    'wmsKhuphoLayer':          { urlKey: 'khuPho',         filesKey: null },
+                    'wmsNgapUngLayer':         { urlKey: 'ngapUng',        filesKey: 'ngapUng' },
+                    'wmsTapKetRacLayer':       { urlKey: 'tapKetRac',      filesKey: 'tapKetRac' },
+                    'wmsTratTuDoThiLayer':     { urlKey: 'tratTuDoThi',    filesKey: 'tratTuDoThi' },
+                    'wmsUnTacGiaoThongLayer':  { urlKey: 'unTacGiaoThong', filesKey: 'unTacGiaoThong' },
+                    'wmsDiemDenVsmtLayer':     { urlKey: 'diemDenVsmt',    filesKey: 'diemDenVsmt' },
+                };
 
-                if (numericId && !isNaN(numericId)) {
-                    // Dùng config.id (từ registry) để quyết định URL
-                    switch (config.id) {
-                        case 'wmsVuviecLayer':
-                        case 'clusterVuviecLayer':
-                            detailUrl = `${App.DETAIL_URLS.vuViec}?id=${numericId}`;
-                            break;
-                        case 'wmsNocgiaLayer':
-                            detailUrl = `${App.DETAIL_URLS.nocGia}?id=${numericId}`;
-                            break;
-                        case 'wmsDiemnhaycamLayer':
-                            detailUrl = `${App.DETAIL_URLS.diemNhayCam}?id=${numericId}`;
-                            break;
-                        case 'wmsPhuongXaLayer':
-                            detailUrl = `${App.DETAIL_URLS.phuongXa}?id=${numericId}`;
-                            break;
-                        case 'wmsKhuphoLayer':
-                            detailUrl = `${App.DETAIL_URLS.khuPho}?id=${numericId}`;
-                            break;
-                    }
-                }
+                const featureId  = feature.id;
+                const numericId  = featureId ? featureId.split('.').pop() : null;
+                const layerCfg   = layerDetailMap[config.id] || {};
+                const detailUrl  = (numericId && !isNaN(numericId) && layerCfg.urlKey)
+                    ? `${App.DETAIL_URLS[layerCfg.urlKey]}?id=${numericId}` : '';
+                const filesKey   = layerCfg.filesKey || null;
 
+                // --- Nút Xem chi tiết ---
                 if (detailUrl) {
                     content += `
-                        <div style="margin-top: 15px; text-align: right;">
+                        <div style="margin-top:15px; text-align:right;">
                             <a href="${detailUrl}" target="_blank" class="detail-button">
                                 <i data-lucide="external-link" class="icon"></i> Xem chi tiết
                             </a>
-                        </div>
-                    `;
+                        </div>`;
                 }
 
-                content += "</div>";
+                // --- Khu vực ảnh đính kèm (placeholder, sẽ được load async) ---
+                if (filesKey && numericId && !isNaN(numericId)) {
+                    content += `<div id="attachment-section" style="margin-top:14px;">
+                        <div style="font-size:12px;color:var(--text-light-color);">
+                            <i data-lucide="loader" style="width:14px;height:14px;animation:spin 1s linear infinite;vertical-align:middle;"></i>
+                            Đang tải file đính kèm...
+                        </div>
+                    </div>`;
+                }
+
+                content += `</div>`;
                 document.getElementById('feature-details').innerHTML = content;
                 lucide.createIcons();
+
+                // --- Fetch file đính kèm async ---
+                if (filesKey && numericId && !isNaN(numericId)) {
+                    fetch(`${App.FILES_API_URL}?layer=${filesKey}&id=${numericId}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            const section = document.getElementById('attachment-section');
+                            if (!section) return;
+                            if (!data.success || data.files.length === 0) {
+                                section.innerHTML = `<p style="font-size:12px;color:var(--text-light-color);margin:0;">Không có file đính kèm.</p>`;
+                                return;
+                            }
+                            let html = `<div style="font-size:12px;font-weight:600;color:var(--text-color);margin-bottom:8px;">
+                                📎 File đính kèm (${data.files.length})
+                            </div>`;
+
+                            // Ảnh — hiển thị dạng lưới
+                            const images = data.files.filter(f => f.isImage);
+                            const others = data.files.filter(f => !f.isImage);
+
+                            if (images.length > 0) {
+                                html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px;margin-bottom:8px;">`;
+                                images.forEach(f => {
+                                    html += `<a href="${f.url}" target="_blank" style="display:block;border-radius:6px;overflow:hidden;border:1px solid var(--border-color);">
+                                        <img src="${f.url}" alt="${f.name}" 
+                                             style="width:100%;height:70px;object-fit:cover;display:block;"
+                                             onerror="this.parentElement.style.display='none'">
+                                    </a>`;
+                                });
+                                html += `</div>`;
+                            }
+
+                            // File khác — danh sách link
+                            if (others.length > 0) {
+                                others.forEach(f => {
+                                    html += `<a href="${f.url}" target="_blank" 
+                                               style="display:flex;align-items:center;gap:6px;padding:6px 8px;
+                                                      border:1px solid var(--border-color);border-radius:6px;
+                                                      text-decoration:none;color:var(--text-color);font-size:12px;
+                                                      margin-bottom:5px;transition:background 0.2s;"
+                                               onmouseover="this.style.background='var(--light-gray)'"
+                                               onmouseout="this.style.background=''"
+                                            >
+                                        <i data-lucide="file" style="width:14px;height:14px;flex-shrink:0;color:var(--primary-color);"></i>
+                                        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</span>
+                                        <i data-lucide="download" style="width:12px;height:12px;margin-left:auto;flex-shrink:0;color:var(--text-light-color);"></i>
+                                    </a>`;
+                                });
+                            }
+
+                            section.innerHTML = html;
+                            lucide.createIcons();
+                        })
+                        .catch(() => {
+                            const section = document.getElementById('attachment-section');
+                            if (section) section.innerHTML = `<p style="font-size:12px;color:#ef4444;margin:0;">Lỗi tải file đính kèm.</p>`;
+                        });
+                }
             },
             
             setLoading(isLoading) { 

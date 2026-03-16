@@ -147,10 +147,10 @@ $config = [
                 'allow' => true,
             ],
             [
-                'actions' => ['vuviec'],
+                'actions' => ['vuviec', 'get-files'],
                 'controllers' => ['quanly/map'], 
                 'allow' => true,
-                'roles' => ['?'], 
+                'roles' => ['?', '@'], 
             ],
             [
                 'controllers' => ['auth/user'],
