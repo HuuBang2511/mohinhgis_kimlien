@@ -99,6 +99,25 @@ $user_id = Yii::$app->user->id;
                                         <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
                                            aria-haspopup="true" aria-expanded="true" href="#">
                                             <i class="nav-main-link-icon fa fa-list"></i>
+                                            <span class="nav-main-link-name">Lớp Đô thị - Môi trường</span>
+                                        </a>
+                                        <ul class="nav-main-submenu">
+                                            <?php foreach ($lopdtmt as $navchild) : ?>
+                                                <?php if (\hcmgis\user\services\AuthService::can($user_id, $navchild['key']) or Yii::$app->user->identity->is_admin == true) { ?>
+                                                    <li class="nav-main-item <?= ($url == $navchild['url']) ? 'active' : '' ?>">
+                                                        <a class="nav-main-link"
+                                                           href="<?= Yii::$app->urlManager->createUrl([$navchild['url']]) ?>">
+                                                            <span class="nav-main-link-name"><?= $navchild['name'] ?></span>
+                                                        </a>
+                                                    </li>
+                                                <?php } ?>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </li>
+                                    <li class="nav-main-item" id="dulieu">
+                                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
+                                           aria-haspopup="true" aria-expanded="true" href="#">
+                                            <i class="nav-main-link-icon fa fa-list"></i>
                                             <span class="nav-main-link-name">Lớp an ninh</span>
                                         </a>
                                         <ul class="nav-main-submenu">
@@ -209,25 +228,7 @@ $user_id = Yii::$app->user->id;
                                             <?php endforeach; ?>
                                         </ul>
                                     </li>
-                                    <li class="nav-main-item" id="dulieu">
-                                        <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
-                                           aria-haspopup="true" aria-expanded="true" href="#">
-                                            <i class="nav-main-link-icon fa fa-list"></i>
-                                            <span class="nav-main-link-name">Lớp Đô thị - Môi trường</span>
-                                        </a>
-                                        <ul class="nav-main-submenu">
-                                            <?php foreach ($lopdtmt as $navchild) : ?>
-                                                <?php if (\hcmgis\user\services\AuthService::can($user_id, $navchild['key']) or Yii::$app->user->identity->is_admin == true) { ?>
-                                                    <li class="nav-main-item <?= ($url == $navchild['url']) ? 'active' : '' ?>">
-                                                        <a class="nav-main-link"
-                                                           href="<?= Yii::$app->urlManager->createUrl([$navchild['url']]) ?>">
-                                                            <span class="nav-main-link-name"><?= $navchild['name'] ?></span>
-                                                        </a>
-                                                    </li>
-                                                <?php } ?>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                    </li>
+                                    
                                      <li class="nav-main-item" id="dulieu">
                                         <a class="nav-main-link nav-main-link-submenu" data-toggle="submenu"
                                            aria-haspopup="true" aria-expanded="true" href="#">

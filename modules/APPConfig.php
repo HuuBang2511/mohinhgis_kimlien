@@ -44,73 +44,7 @@ class APPConfig
                 'hasChild' => false,
             ],
         ],
-        // 'vientham' => [
-        //     [
-        //         'name' => 'Kết quả phân tích',
-        //         'icon' => 'fa fa-list',
-        //         'url' => 'quanly/ketqua-vientham',
-        //         'key'=>'quanly.ketqua-vientham.index',
-        //         'hasChild' => false,
-        //     ],
-        //     [
-        //         'name' => 'Module Viễn thám',
-        //         'icon' => 'fa fa-list',
-        //         'url' => 'quanly/anhvientham',
-        //         'key'=>'quanly.anhvientham.index',
-        //         'hasChild' => false,
-        //     ]
-        // ],
-//         'aphu' => [
-//             [
-//                 'name' => 'Đồng hồ KH',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/dongho-kh',
-//                 'key'=>'quanly.aphu/dongho-kh.index',
-//                 'hasChild' => false,
-//             ],
-// //            [
-// //                'name' => 'Hồ Thủy Lợi',
-// //                'icon' => 'fa fa-list',
-// //                'url' => 'quanly/aphu/ho-thuyloi',
-// //                'key'=>'quanly.aphu/ho-thuyloi.index',
-// //                'hasChild' => false,
-// //            ],
-//             [
-//                 'name' => 'Nhà máy nước',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/nhamay-nuoc',
-//                 'key'=>'quanly.aphu/nhamay-nuoc.index',
-//                 'hasChild' => false,
-//             ],
-//             [
-//                 'name' => 'Ống dịch vụ',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/ong-dichvu',
-//                 'key'=>'quanly.aphu/ong-dichvu.index',
-//                 'hasChild' => false,
-//             ],
-//             [
-//                 'name' => 'Ống nước thô',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/ong-nuoctho',
-//                 'key'=>'quanly.aphu/ong-nuoctho.index',
-//                 'hasChild' => false,
-//             ],
-//             [
-//                 'name' => 'Ống phân phối',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/ong-phanphoi',
-//                 'key'=>'quanly.aphu/ong-phanphoi.index',
-//                 'hasChild' => false,
-//             ],
-//             [
-//                 'name' => 'Van mạng lưới',
-//                 'icon' => 'fa fa-list',
-//                 'url' => 'quanly/aphu/van-mangluoi',
-//                 'key'=>'quanly.aphu/van-mangluoi.index',
-//                 'hasChild' => false,
-//             ],
-//         ],
+        
         'quanly' => [
             
             [
